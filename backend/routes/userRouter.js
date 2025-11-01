@@ -7,7 +7,7 @@ const bcrypt= require("bcrypt");
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 
-// Joi schemas
+// region Joi schemas
 const registerSchema = Joi.object({
     userName: Joi.string().min(3).required(),
     firstName: Joi.string().required(),
@@ -15,13 +15,15 @@ const registerSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required()
 });
+// endregion
 
 const loginSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required()
 });
 
-// fetch users
+
+// region fetch users
 router.get("/api/user/fetch" , async(req, res)=>{
 
 
@@ -37,7 +39,9 @@ router.get("/api/user/fetch" , async(req, res)=>{
     }
 })
 
-// register
+// endregion
+
+// region register user
 router.post('/api/user/register', async (req, res) => {
     try {
         const { error, value } = registerSchema.validate(req.body);
@@ -58,7 +62,9 @@ router.post('/api/user/register', async (req, res) => {
     }
 });
 
-// login
+// endregion
+
+// region login
 router.post('/api/user/login', async (req, res) => {
     try {
         const { error, value } = loginSchema.validate(req.body);
@@ -82,5 +88,6 @@ router.post('/api/user/login', async (req, res) => {
         return res.status(500).json({ error: err.message || 'Login failed' });
     }
 });
+// endregion
 
 module.exports = router;

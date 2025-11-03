@@ -1,5 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 
+
+// region Initial State
 const initialState = {
 
     isLoading:false,
@@ -44,6 +46,7 @@ const initialState = {
     ]
 
 };
+// endregion
 
 const InventorySlice = createSlice({
     name: "Inventory",

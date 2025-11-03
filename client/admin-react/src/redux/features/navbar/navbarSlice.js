@@ -9,7 +9,7 @@ import {
 
 const initialState = {
     itemsList: [
-        {name: 'Dashboard', href: '/admin-dashboard', icon: TableCellsIcon, subItems: [{name: "dashboard"}]},
+        {name: 'Dashboard', href: "/admin-dashboard", icon: TableCellsIcon},
 
         {
             name: 'Store', href: '/store', icon: BuildingStorefrontIcon, subItems: [

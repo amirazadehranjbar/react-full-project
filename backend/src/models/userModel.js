@@ -1,3 +1,4 @@
+// src/models/userModel.js
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -9,12 +10,18 @@ const userSchema = new mongoose.Schema({
         maxlength: [20, 'Username cannot exceed 20 characters']
     },
 
+    role:{
+        type: String,
+        enum: ['admin' , 'user'],
+        default: 'user'
+    },
+
     isLoggedIn: {
         type: Boolean,
         default: false
     },
 
-    isRegister: {
+    isRegistered: {
         type: Boolean,
         default: false,
     },

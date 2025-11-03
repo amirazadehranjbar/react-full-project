@@ -1,3 +1,4 @@
+// src/validators/userValidator.js
 const Joi = require('joi');
 
 // Validation for user registration
@@ -12,6 +13,8 @@ const registerUserSchema = Joi.object({
             'string.max': 'Username cannot exceed 20 characters',
             'any.required': 'Username is required'
         }),
+
+    role: Joi.string().valid("admin", "user").default("user"),
 
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org', 'edu', 'io'] } })

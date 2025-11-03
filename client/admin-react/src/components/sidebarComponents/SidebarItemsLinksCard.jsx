@@ -31,7 +31,7 @@ function SidebarItemsLinksCard({ item, isOpen, onToggle }) {
                             <span>{item.name}</span>
                         </div>
 
-                        {/* فلش کوچک کناری */}
+                        {/* litte corner arrow */}
                         {item.subItems && (
                             <svg
                                 className={`w-2.5 h-2.5 ms-3 transform transition-transform duration-150 ${
@@ -60,7 +60,7 @@ function SidebarItemsLinksCard({ item, isOpen, onToggle }) {
                             <li key={subItem.name || idx}>
                                 <NavLink
                                     onClick={() => {
-                                        // بستن منو و بستن سایدبار (اگر می‌خواهید)
+                                        // close munu and sidebar (if needed)
                                         onToggle();
                                         dispatch(setSidebarOpen());
                                     }}

@@ -1,10 +1,10 @@
 import CardsList from "./CardsList.jsx";
 import Chart from "./Chart.jsx";
-import InventoryTableMy from "../../components/table/InventoryTableMy.jsx";
+import InventoryTableMy from "../../../components/table/InventoryTableMy.jsx";
 import {useSelector} from "react-redux";
-import TableComponent from "../../components/table/TableComponent.jsx";
+import TableComponent from "../../../components/table/TableComponent.jsx";
 
-function Index() {
+function SalesReport() {
 
     const {data, dataHeaders, isLoading, isError} = useSelector(
         (state) => state.inventoryReducer
@@ -32,6 +32,6 @@ function Index() {
     );
 }
 
-export default Index;
+export default SalesReport;
 
 

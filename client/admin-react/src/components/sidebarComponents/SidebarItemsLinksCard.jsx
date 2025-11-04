@@ -2,19 +2,33 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setSidebarOpen } from "../../redux/features/navbar/navbarSlice.js";
+import {
+    BuildingStorefrontIcon,
+    ChartPieIcon,
+    RocketLaunchIcon,
+    ShoppingCartIcon,
+    TableCellsIcon,
+    UsersIcon
+} from "@heroicons/react/24/outline/index.js";
 
-/**
- * props:
- *  - item: { name, href, icon, subItems? }
- *  - isOpen: boolean
- *  - onToggle: function
- */
+// ✅ Map icon names to components
+const iconMap = {
+    TableCellsIcon: TableCellsIcon,
+    BuildingStorefrontIcon: BuildingStorefrontIcon,
+    ShoppingCartIcon: ShoppingCartIcon,
+    UsersIcon: UsersIcon,
+    RocketLaunchIcon: RocketLaunchIcon,
+    ChartPieIcon: ChartPieIcon,
+};
+
 function SidebarItemsLinksCard({ item, isOpen, onToggle }) {
     const dispatch = useDispatch();
 
+    // ✅ Get the component from the map
+    const IconComponent = iconMap[item.icon];
+
     return (
         <li id={item.name} className="relative">
-
             <div onClick={onToggle} className="cursor-pointer">
                 <NavLink
                     to={item.href || "#"}
@@ -26,12 +40,11 @@ function SidebarItemsLinksCard({ item, isOpen, onToggle }) {
                 >
                     <div className="flex flex-row w-full justify-between items-center">
                         <div className="flex justify-center gap-2 items-center">
-
-                            {item.icon && <item.icon aria-hidden="true" className="size-6 shrink-0" />}
+                            {/* ✅ Render the icon component */}
+                            {IconComponent && <IconComponent aria-hidden="true" className="size-6 shrink-0" />}
                             <span>{item.name}</span>
                         </div>
 
-                        {/* litte corner arrow */}
                         {item.subItems && (
                             <svg
                                 className={`w-2.5 h-2.5 ms-3 transform transition-transform duration-150 ${
@@ -49,18 +62,13 @@ function SidebarItemsLinksCard({ item, isOpen, onToggle }) {
                 </NavLink>
             </div>
 
-
             {isOpen && item.subItems && (
-                <div
-                    className="absolute left-2 top-0 z-10 ml-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
-
-                >
+                <div className="absolute left-2 top-0 z-10 ml-2 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
                     <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
                         {item.subItems.map((subItem, idx) => (
                             <li key={subItem.name || idx}>
                                 <NavLink
                                     onClick={() => {
-                                        // close munu and sidebar (if needed)
                                         onToggle();
                                         dispatch(setSidebarOpen());
                                     }}

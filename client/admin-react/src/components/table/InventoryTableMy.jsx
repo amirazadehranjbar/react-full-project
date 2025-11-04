@@ -8,7 +8,7 @@ function InventoryTableMy() {
 
 
     const {data, dataHeaders, isLoading, isError} = useSelector(
-        (state) => state.inventoryReducer
+        (state) => state.salesReducer
     );
 
 

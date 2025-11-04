@@ -7,7 +7,7 @@ import TableComponent from "../../../components/table/TableComponent.jsx";
 function SalesReport() {
 
     const {data, dataHeaders, isLoading, isError} = useSelector(
-        (state) => state.inventoryReducer
+        (state) => state.salesReducer
     );
 
 

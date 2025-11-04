@@ -11,7 +11,7 @@ function Chart() {
     // You can define all series settings here
     const series = [
         {
-            data: pData,
+            categories: pData,
             label: 'pv',
             yAxisId: 'leftAxisId',
             // Suggested styles (exact names may vary by version)
@@ -27,7 +27,7 @@ function Chart() {
             areaOpacity: 0.08
         },
         {
-            data: uData,
+            categories: uData,
             label: 'uv',
             yAxisId: 'rightAxisId',
             color: '#10b981',
@@ -55,7 +55,7 @@ function Chart() {
                     xAxis={[
                         {
                             scaleType: 'point',
-                            data: xLabels,
+                            categories: xLabels,
                             // Label for x axis
                             label: 'Pages',
                             tickLabelStyle: {fill: "#fff", fontSize: 14, fontFamily: "roboto"},

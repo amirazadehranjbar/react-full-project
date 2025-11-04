@@ -19,7 +19,7 @@ export const userRegister = createAsyncThunk(
             return res.data;
 
         } catch (e) {
-            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Registration error");
+            return thunkAPI.rejectWithValue(e.response?.categories || e.message || "Registration error");
         }
     }
 );
@@ -41,8 +41,8 @@ export const userLogin = createAsyncThunk(
             return res.data;
 
         } catch (e) {
-            console.error("❌ Login error:", e.response?.data || e.message);
-            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Login error");
+            console.error("❌ Login error:", e.response?.categories || e.message);
+            return thunkAPI.rejectWithValue(e.response?.categories || e.message || "Login error");
         }
     }
 );

@@ -1,18 +1,14 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {
-    BuildingStorefrontIcon, ChartPieIcon, RocketLaunchIcon,
-    ShoppingCartIcon,
-    TableCellsIcon,
-    UsersIcon
-} from "@heroicons/react/24/outline/index.js";
-
 
 const initialState = {
     itemsList: [
-        {name: 'Dashboard', href: "/admin-dashboard", icon: TableCellsIcon},
+        {name: 'Dashboard', href: "/admin-dashboard", icon: "TableCellsIcon"}, // ✅ String, not component
 
         {
-            name: 'Store', href: '/store', icon: BuildingStorefrontIcon, subItems: [
+            name: 'Store',
+            href: '/store',
+            icon: "BuildingStorefrontIcon", // ✅ String
+            subItems: [
                 {name: "manage product group", href: '/store/managePG'},
                 {name: "manage product", href: '/store'},
                 {name: "manage brands", href: '/store'},
@@ -22,35 +18,27 @@ const initialState = {
             ]
         },
 
-
-        {name: 'Orders', href: '/orders', icon: ShoppingCartIcon , subItems: [
+        {name: 'Orders', href: '/orders', icon: "ShoppingCartIcon", subItems: [
                 {name: "manage baskets", href: '/orders'},
                 {name: "manage orders", href: '/orders'},
                 {name: "manage send", href: '/orders'},
             ]},
 
-
-        {name: 'Users', href: '/users', icon: UsersIcon , subItems: [
+        {name: 'Users', href: '/users', icon: "UsersIcon", subItems: [
                 {name: "see users", href: '/users'},
                 {name: "roles", href: '/users'},
                 {name: "partners", href: '/users'},
             ]},
 
-
-        {name: 'Contact', href: '/contact', icon: RocketLaunchIcon , subItems: [
+        {name: 'Contact', href: '/contact', icon: "RocketLaunchIcon", subItems: [
                 {name: "questions", href: '/contact'},
                 {name: "comments", href: '/contact'},
-
             ]},
 
-
-        {name: 'Reports', href: '/reports', icon: ChartPieIcon , subItems: [
+        {name: 'Reports', href: '/reports', icon: "ChartPieIcon", subItems: [
                 {name: "reports 1", href: '/reports'},
                 {name: "reports 2", href: '/reports'},
-
             ]},
-
-
     ],
 
     sidebarOpen: false,
@@ -62,12 +50,10 @@ const NavbarSlice = createSlice({
 
     reducers: {
         setSidebarOpen: (state) => {
-
             state.sidebarOpen = !state.sidebarOpen;
         }
     }
 });
-
 
 export const {setSidebarOpen} = NavbarSlice.actions;
 export default NavbarSlice.reducer;

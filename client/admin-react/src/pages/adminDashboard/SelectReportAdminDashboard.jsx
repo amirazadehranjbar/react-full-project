@@ -18,7 +18,7 @@ function SelectReportAdminDashboard() {
                     </div>
 
                     {/*sales reports*/}
-                    <div className="bg-gray-400/5 p-8 cursor-pointer sm:p-10 flex items-center justify-center">
+                    <div className="bg-gray-400/5 p-8 cursor-pointer sm:p-10 flex items-center justify-center" onClick={()=>{navigation("/admin/sales-report")}}>
                         <BadgeDollarSignIcon width={158} height={48}/>
                         <p className="text-center font-bold text-gray-400">Sales Reports</p>
                     </div>

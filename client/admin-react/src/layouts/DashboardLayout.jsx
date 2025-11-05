@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import MainContent from "../components/MainContent";
-import SearchComponentOne from "../components/serch/SearchComponentOne.jsx";
+import AdminDashboardHeaderChildren from "../components/headerChildren/AdminDashboardHeaderChildren.jsx";
 
 function DashboardLayout() {
     return (
@@ -10,7 +10,7 @@ function DashboardLayout() {
             <Sidebar />
 
             <div className="flex-1 lg:pl-72 flex flex-col">
-                <Header children={<SearchComponentOne/>}/>
+                <Header children={<AdminDashboardHeaderChildren/>}/>
                 <MainContent>
                     <Outlet />
                 </MainContent>
@@ -22,12 +22,12 @@ function DashboardLayout() {
 export default DashboardLayout;
 
 // App.jsx
-// ├── AuthLayout (no sidebar/header)
+// ├── AuthLayout (no sidebar/headerChildren)
 // │   └── / → AuthSelection
 // │   └── /login → Login (when you create it)
 // │   └── /register → Register (when you create it)
 // │
-// └── DashboardLayout (with sidebar/header)
+// └── DashboardLayout (with sidebar/headerChildren)
 //     └── /admin-dashboard → SalesReport
 //     └── /store/managePG → ManagePg
 //     └── /store/manageColors → ManageColors

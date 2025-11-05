@@ -1,6 +1,6 @@
 import {MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
-function SearchComponentOne() {
+function AdminDashboardHeaderChildren() {
     return (
         <form action="#" method="GET" className="grid flex-1 grid-cols-1">
             <input
@@ -18,4 +18,4 @@ function SearchComponentOne() {
     )
 }
 
-export default SearchComponentOne
+export default AdminDashboardHeaderChildren

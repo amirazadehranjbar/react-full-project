@@ -11,7 +11,7 @@ function AddColor() {
 
     return (
         <div className="px-2">
-            {/* header icon */}
+            {/* headerChildren icon */}
             <div className="mx-auto flex w-12 h-12 items-center justify-center rounded-full bg-green-100">
                 <PlusSquare aria-hidden="true" className="w-6 h-6 text-green-600" />
             </div>

@@ -11,7 +11,7 @@ const Header = ({children}) => {
 
     return (
         <div
-            className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 ">
+            className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 bg-white shadow-xs sm:gap-x-6 sm:px-6 justify-center mt-2">
             {/*region open sidebar button (mobile)*/}
             <button type="button" onClick={() => dispatch(setSidebarOpen(true))}
                     className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
@@ -22,11 +22,10 @@ const Header = ({children}) => {
             {/*region separator*/}
             <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden"/>
             {/*endregion*/}
-            {/*region search form*/}
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-
+            {/*region Header Children & Actions*/}
+            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-center items-center">
                 {children}
-                {/*region header actions*/}
+                {/*region headerChildren actions*/}
                 <div className="flex items-center gap-x-4 lg:gap-x-6">
                     {/*region notifications button*/}
                     <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">

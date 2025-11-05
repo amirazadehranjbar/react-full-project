@@ -10,7 +10,7 @@ import React from 'react'
  */
 const MainContent = ({children}) => (
     <main className="flex-1 overflow-auto h-screen">
-        <div className="h-full bg-slate-700">{children}</div>
+        {children}
     </main>
 )
 //endregion

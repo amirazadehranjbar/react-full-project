@@ -39,7 +39,7 @@ function Inventory() {
     const displayData = filteredData.length > 0 ? filteredData : data;
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 h-full w-full bg-gray-500 mt-2 rounded-md">
+        <div className="px-4 sm:px-6 lg:px-8 h-full w-full bg-gray-500 mt-2 ">
             {(isLoading || isLoadingCategory) && (
                 <div className="flex justify-center items-center h-full">
                     <RingLoader color="#4F46E5"/>
@@ -57,7 +57,7 @@ function Inventory() {
                 <>
                     {/* ✅ Filter Section */}
                     <div
-                        className="sm:flex sm:items-center sm:justify-between shadow-md p-4 bg-gray-400 rounded-md mb-4">
+                        className="sm:flex sm:items-center sm:justify-between shadow-md p-4 bg-gray-400 rounded-md mb-8">
                         <ComboBoxWithImage onCategoryChange={handleCategoryChange}/>
 
                         {/* ✅ Show filter status */}

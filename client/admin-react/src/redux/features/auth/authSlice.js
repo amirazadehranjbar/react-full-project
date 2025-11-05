@@ -6,7 +6,7 @@ export const userRegister = createAsyncThunk(
     "auth/userRegister",
     async ({userName, role, email, password, repeat_password, phone, profileImg}, thunkAPI) => {
         try {
-            const res = await axios.post("http://localhost:3500/api/users", {
+            const res = await axios.post("http://localhost:3500/api/users/register", {
                 userName,
                 role,
                 email,
@@ -15,6 +15,8 @@ export const userRegister = createAsyncThunk(
                 phone,
                 profileImg
             });
+
+            console.log(res.data)
 
             return res.data;
 
@@ -37,7 +39,6 @@ export const userLogin = createAsyncThunk(
                 withCredentials: true // ✅ Important for cookies
             });
 
-            console.log("✅ Login response:", res.data);
             return res.data;
 
         } catch (e) {

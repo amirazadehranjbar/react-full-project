@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const userRouter = require("./routes/userRouter");
+const authUserRouter = require("./routes/authUserRouter");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const categoryRouter = require("./routes/categoryRouter");
@@ -28,7 +28,7 @@ app.use(cors({
 }));
 
 // routers
-app.use("/", userRouter);
+app.use("/", authUserRouter);
 app.use("/" , categoryRouter);
 app.use("/",productRouter);
 app.use("/" , inventoryRouter);

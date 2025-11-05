@@ -4,7 +4,7 @@ import {Navigate} from "react-router";
 
 function ProtectedRoute() {
 
-    const {isLoggedIn, role} = useSelector(state => state.authReducer);
+    const {isLoggedIn, role} = useSelector(state => state.authUserReducer);
 
     // Step 1: Check if user is logged in
     if (!isLoggedIn) {

@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import store from '../redux/store';
-import { logout } from '../redux/features/auth/authSlice';
+import { logout } from '../redux/features/auth/authUserSlice.js';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:3500',

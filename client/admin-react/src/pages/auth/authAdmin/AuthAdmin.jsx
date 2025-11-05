@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useDispatch, useSelector} from "react-redux";
-import {userLogin} from "../../../redux/features/auth/authSlice.js";
+import {userLogin} from "../../../redux/features/auth/authUserSlice.js";
 import {useNavigate} from "react-router";
 
 function AuthAdmin() {
@@ -9,7 +9,7 @@ function AuthAdmin() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {message, isLoading, isError} = useSelector(state => state.authReducer);
+    const {message, isLoading, isError} = useSelector(state => state.authUserReducer);
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ✅ Fixed: Added parentheses

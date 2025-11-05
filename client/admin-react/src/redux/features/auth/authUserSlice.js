@@ -50,12 +50,10 @@ export const userLogin = createAsyncThunk(
 //endregion
 
 const initialState = {
-    isLoggedIn: false,
-    isRegistered: false,
     userName: "",
     email: "",
     profileImg: "",
-    role: null,
+    role: "user",
     phone: "",
     address: "",
     message: null,
@@ -63,14 +61,13 @@ const initialState = {
     isError: false,
 }
 
-const AuthSlice = createSlice({
+const AuthUserSlice = createSlice({
     name: "auth",
     initialState,
 
     reducers: {
-        // Add logout action
-        logout: (state) => {
-            state.isLoggedIn = false;
+        // Add user logout action
+        userLogout: (state) => {
             state.userName = "";
             state.email = "";
             state.role = null;
@@ -80,7 +77,7 @@ const AuthSlice = createSlice({
 
     extraReducers: (builder) => builder
 
-        // LOGIN
+        //region LOGIN
         .addCase(userLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -90,10 +87,8 @@ const AuthSlice = createSlice({
         .addCase(userLogin.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.isLoggedIn = action.payload.success;
             state.userName = action.payload.data.userName;
             state.email = action.payload.data.email;
-            state.role = action.payload.data.role;
             state.phone = action.payload.data.phone || "";
             state.address = action.payload.data.address || "";
             state.profileImg = action.payload.data.profileImg || "";
@@ -106,8 +101,9 @@ const AuthSlice = createSlice({
             state.message = action.payload?.message || "Login failed";
             console.log("Login rejected:", action.payload);
         })
+        // endregion
 
-        // REGISTER
+        //region REGISTER
         .addCase(userRegister.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -116,17 +112,17 @@ const AuthSlice = createSlice({
         .addCase(userRegister.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.isRegistered = true;
             state.message = action.payload.message;
         })
 
         .addCase(userRegister.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
-            state.message = action.payload?.message || "Registration failed";
+            state.message = action.payload?.message || "User Registration failed";
         })
+        //endregion
 });
 
 
-export const {logout} = AuthSlice.actions;
-export default AuthSlice.reducer;
+export const {userLogout} = AuthUserSlice.actions;
+export default AuthUserSlice.reducer;

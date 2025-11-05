@@ -13,6 +13,9 @@ import ProtectedRoute from "./protectedRoutes/ProtectedRoute.jsx";
 import SelectReportAdminDashboard from "./pages/adminDashboard/SelectReportAdminDashboard.jsx";
 import Inventory from "./pages/adminDashboard/inventory/Inventory.jsx";
 import InventoryLayout from "./layouts/InventoryLayout.jsx";
+import AuthUser from "./pages/auth/authUser/AuthUser.jsx";
+import UserLayout from "./layouts/UserLayout.jsx";
+import UserMainPage from "./pages/user/UserMainPage.jsx";
 
 function App() {
     const location = useLocation();
@@ -23,8 +26,15 @@ function App() {
             {/* Auth Routes - NO Sidebar/Header */}
             <Route element={<AuthLayout/>}>
                 <Route path="/" element={<AuthSelection/>}/>
-                <Route path="/auth/admin/login" element={<AuthAdmin/>}/>
+                <Route path="/api/admin/login" element={<AuthAdmin/>}/>
+                <Route path="/api/user/register" element={<AuthUser/>}></Route>
             </Route>
+
+            {/*region user Routes*/}
+            <Route element={<UserLayout/>}>
+                <Route path="/api/user" element={<UserMainPage/>}/>
+            </Route>
+            {/*endregion*/}
 
             {/* Dashboard Routes - WITH Sidebar/Header */}
             <Route element={<ProtectedRoute/>}>

@@ -3,10 +3,11 @@ import NavbarSlice from "./features/navbar/navbarSlice.js";
 import ProductSlice from "./features/product/productSlice.js";
 import ColorsSlice from "./features/colors/colorsSlice.js";
 import GuarantiesSlice from "./features/guaranties/guarantiesSlice.js";
-import AuthSlice from "./features/auth/authSlice.js";
 import SalesSlice from "./features/sales/salesSlice.js";
 import inventorySlice from "./features/inventory/inventorySlice.js";
 import categoryReducer from "./features/category/categoryReducer.js";
+import AuthUserSlice from "./features/auth/authUserSlice.js";
+import AuthAdminSlice from "./features/auth/authAdminSlice.js";
 
 
 
@@ -17,7 +18,8 @@ const store = configureStore({
         productReducer:ProductSlice,
         colorsReducer:ColorsSlice,
         guarantiesReducer:GuarantiesSlice,
-        authReducer : AuthSlice,
+        authAdminReducer:AuthAdminSlice,
+        authUserReducer : AuthUserSlice,
         inventoryReducer:inventorySlice,
         categoryReducer:categoryReducer,
     }

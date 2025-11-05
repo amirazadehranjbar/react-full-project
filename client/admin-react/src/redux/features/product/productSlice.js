@@ -15,6 +15,7 @@ const ProductSlice = createSlice({
             state.isOpenAddProductModal = action.payload;
         },
 
+
     },
 });
 

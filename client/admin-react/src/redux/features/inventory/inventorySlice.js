@@ -23,12 +23,29 @@ const initialState = {
     isLoading: false,
     isError: false,
     error: null,
-    data: []
+    data: [],
+    filteredData:[],
 };
 
 const inventorySlice = createSlice({
     name: "inventory",
     initialState,
+    reducers:{
+        // filter products by ID
+        filterProductByID:(state, action)=>{
+            const categoryID = action.payload;
+
+            // If no category selected, show all products
+            if (!categoryID) {
+                state.filteredData = state.data;
+                return;
+            }
+
+            state.filteredData = state.data.filter(product => {
+                return product.categoryID === categoryID;
+            });
+        }
+    },
     extraReducers: (builder) => builder
 
         .addCase(getInventory.pending, state => {
@@ -51,4 +68,5 @@ const inventorySlice = createSlice({
         })
 });
 
+export const {filterProductByID} = inventorySlice.actions;
 export default inventorySlice.reducer;

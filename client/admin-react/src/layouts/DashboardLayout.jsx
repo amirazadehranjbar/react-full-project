@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import MainContent from "../components/MainContent";
+import SearchComponentOne from "../components/serch/SearchComponentOne.jsx";
 
 function DashboardLayout() {
     return (
@@ -9,7 +10,7 @@ function DashboardLayout() {
             <Sidebar />
 
             <div className="flex-1 lg:pl-72 flex flex-col">
-                <Header />
+                <Header children={<SearchComponentOne/>}/>
                 <MainContent>
                     <Outlet />
                 </MainContent>

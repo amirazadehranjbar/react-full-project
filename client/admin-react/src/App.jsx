@@ -16,6 +16,7 @@ import InventoryLayout from "./layouts/InventoryLayout.jsx";
 import AuthUser from "./pages/auth/authUser/AuthUser.jsx";
 import UserLayout from "./layouts/UserLayout.jsx";
 import UserMainPage from "./pages/user/UserMainPage.jsx";
+import ProductsInCategory from "./pages/products/ProductsInCategory.jsx";
 
 function App() {
     const location = useLocation();
@@ -33,6 +34,7 @@ function App() {
             {/*region user Routes*/}
             <Route element={<UserLayout/>}>
                 <Route path="/api/user" element={<UserMainPage/>}/>
+                <Route path="/api/user/products-in-category" element={<ProductsInCategory/>}></Route>
             </Route>
             {/*endregion*/}
 

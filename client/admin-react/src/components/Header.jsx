@@ -11,7 +11,7 @@ const Header = ({children}) => {
 
     return (
         <div
-            className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 bg-white shadow-xs sm:gap-x-6 sm:px-6 justify-center mt-2">
+            className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 bg-white shadow-xs sm:gap-x-6 sm:px-6 justify-center mb-5">
             {/*region open sidebar button (mobile)*/}
             <button type="button" onClick={() => dispatch(setSidebarOpen(true))}
                     className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
@@ -47,9 +47,6 @@ const Header = ({children}) => {
                     />
 
                     {/*endregion*/}
-
-
-
 
 
                 </div>

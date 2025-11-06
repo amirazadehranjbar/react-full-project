@@ -1,25 +1,39 @@
+// backend/src/routes/productRouter.js
 const express = require("express");
-const {ProductModel} = require("../models/productModel");
+const { ProductModel } = require("../models/productModel");
 const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
+const CategoryModel = require("../models/categoryModel");
+const { upload, cloudinary } = require("../config/cloudinary");
 const productRouter = express.Router();
 
-//region ✅ Admin only - Add product
+//region ✅ Admin only - Add product with images
 productRouter.post(
     "/api/admin/product",
     authenticate,
     authorizeRole('admin'),
+    upload.array('images', 5), // Accept up to 5 images
     async (req, res) => {
         try {
-            const { name, price, inventory, targetInventory, categoryID, images, isOnSale } = req.body;
+            const { name, price, inventory, targetInventory, categoryID, isOnSale } = req.body;
+
+            // Get uploaded image URLs from Cloudinary
+            const imageUrls = req.files ? req.files.map(file => file.path) : [];
+
+            if (imageUrls.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "At least one image is required"
+                });
+            }
 
             const newProduct = new ProductModel({
                 name,
-                price,
-                inventory,
-                targetInventory,
+                price: Number(price),
+                inventory: Number(inventory),
+                targetInventory: Number(targetInventory),
                 categoryID,
-                images,
-                isOnSale
+                images: imageUrls,
+                isOnSale: isOnSale === 'true'
             });
 
             const savedProduct = await newProduct.save();
@@ -39,7 +53,117 @@ productRouter.post(
         }
     }
 );
-// endregion
+//endregion
+
+//region ✅ Admin only - Update product with new images
+productRouter.put(
+    "/api/admin/product/:id",
+    authenticate,
+    authorizeRole('admin'),
+    upload.array('images', 5),
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { name, price, inventory, targetInventory, categoryID, isOnSale, keepOldImages } = req.body;
+
+            const product = await ProductModel.findById(id);
+            if (!product) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Product not found"
+                });
+            }
+
+            // Handle images
+            let imageUrls = [];
+            if (keepOldImages === 'true') {
+                imageUrls = product.images;
+            } else {
+                // Delete old images from Cloudinary
+                for (const imageUrl of product.images) {
+                    const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                    await cloudinary.uploader.destroy(publicId);
+                }
+            }
+
+            // Add new images
+            if (req.files && req.files.length > 0) {
+                const newImageUrls = req.files.map(file => file.path);
+                imageUrls = [...imageUrls, ...newImageUrls];
+            }
+
+            // Update product
+            const updatedProduct = await ProductModel.findByIdAndUpdate(
+                id,
+                {
+                    name: name || product.name,
+                    price: price ? Number(price) : product.price,
+                    inventory: inventory ? Number(inventory) : product.inventory,
+                    targetInventory: targetInventory ? Number(targetInventory) : product.targetInventory,
+                    categoryID: categoryID || product.categoryID,
+                    images: imageUrls,
+                    isOnSale: isOnSale !== undefined ? isOnSale === 'true' : product.isOnSale
+                },
+                { new: true }
+            );
+
+            return res.status(200).json({
+                success: true,
+                data: updatedProduct,
+                message: "Product updated successfully"
+            });
+
+        } catch (e) {
+            console.error("Error updating product:", e);
+            return res.status(500).json({
+                success: false,
+                message: e.message || "Something went wrong"
+            });
+        }
+    }
+);
+//endregion
+
+//region ✅ Admin only - Delete product and its images
+productRouter.delete(
+    "/api/admin/product/:id",
+    authenticate,
+    authorizeRole('admin'),
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const product = await ProductModel.findById(id);
+            if (!product) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Product not found"
+                });
+            }
+
+            // Delete images from Cloudinary
+            for (const imageUrl of product.images) {
+                const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                await cloudinary.uploader.destroy(publicId);
+            }
+
+            await ProductModel.findByIdAndDelete(id);
+
+            return res.status(200).json({
+                success: true,
+                message: "Product and images deleted successfully"
+            });
+
+        } catch (e) {
+            console.error("Error deleting product:", e);
+            return res.status(500).json({
+                success: false,
+                message: e.message || "Something went wrong"
+            });
+        }
+    }
+);
+//endregion
 
 //region ✅ Public route - Get products
 productRouter.get("/api/user/product", async (req, res) => {
@@ -62,6 +186,33 @@ productRouter.get("/api/user/product", async (req, res) => {
         });
     }
 });
-// endregion
+//endregion
+
+//region ✅ Public route - Get products by category ID
+productRouter.post("/api/user/products-in-category", async (req, res) => {
+    try {
+        const { categoryID } = req.body;
+
+        const productsInCategory = await ProductModel.find({ categoryID: categoryID });
+        const categoryName = await CategoryModel.findOne({ _id: categoryID }).select("name");
+
+        if(!productsInCategory || !categoryName) {
+            return res.status(404).json({ success: false, message: "No products found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            categoryName: categoryName.name,
+            data: productsInCategory
+        });
+
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Something went wrong"
+        });
+    }
+});
+//endregion
 
 module.exports = productRouter;

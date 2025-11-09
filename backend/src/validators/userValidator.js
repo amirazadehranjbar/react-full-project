@@ -60,6 +60,35 @@ const registerUserSchema = Joi.object({
         .optional()
 });
 
+// ✅ NEW: Validation for Google OAuth user (no password required)
+const googleUserSchema = Joi.object({
+    userName: Joi.string()
+        .min(5)
+        .max(20)
+        .required()
+        .trim(),
+
+    email: Joi.string()
+        .email()
+        .required()
+        .lowercase()
+        .trim(),
+
+    googleId: Joi.string()
+        .required(),
+
+    displayName: Joi.string()
+        .optional(),
+
+    profileImg: Joi.string()
+        .uri()
+        .optional(),
+
+    role: Joi.string()
+        .valid("admin", "user")
+        .default("user")
+});
+
 // Validation for user login
 const loginUserSchema = Joi.object({
     email: Joi.string()
@@ -97,10 +126,11 @@ const updateUserSchema = Joi.object({
 
     isLoggedIn: Joi.boolean()
         .optional()
-}).min(1); // At least one field must be provided for update
+}).min(1);
 
 module.exports = {
     registerUserSchema,
     loginUserSchema,
-    updateUserSchema
+    updateUserSchema,
+    googleUserSchema // ✅ Export new schema
 };

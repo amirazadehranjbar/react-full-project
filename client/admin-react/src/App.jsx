@@ -13,10 +13,14 @@ import ProtectedRoute from "./protectedRoutes/ProtectedRoute.jsx";
 import SelectReportAdminDashboard from "./pages/adminDashboard/SelectReportAdminDashboard.jsx";
 import Inventory from "./pages/adminDashboard/inventory/Inventory.jsx";
 import InventoryLayout from "./layouts/InventoryLayout.jsx";
-import AuthUser from "./pages/auth/authUser/AuthUser.jsx";
+import LoginUser from "./pages/auth/authUser/LoginUser.jsx";
 import UserLayout from "./layouts/UserLayout.jsx";
 import UserMainPage from "./pages/user/UserMainPage.jsx";
 import ProductsInCategory from "./pages/products/ProductsInCategory.jsx";
+import AuthGoogle from "./pages/auth/authUser/AuthGoogle.jsx";
+import RegisterUser from "./pages/auth/authUser/RegisterUser.jsx";
+import UserProfile from "./pages/user/userProfile/UserProfile.jsx";
+import UserProfileLayout from "./layouts/UserProfileLayout.jsx";
 
 function App() {
     const location = useLocation();
@@ -28,7 +32,9 @@ function App() {
             <Route element={<AuthLayout/>}>
                 <Route path="/" element={<AuthSelection/>}/>
                 <Route path="/api/admin/login" element={<AuthAdmin/>}/>
-                <Route path="/api/user/register" element={<AuthUser/>}></Route>
+                <Route path="/api/users/login" element={<LoginUser/>}></Route>
+                <Route path="/api/users/register" element={<RegisterUser/>}></Route>
+                <Route path="/api/users/auth/google" element={<AuthGoogle/>}></Route>
             </Route>
 
             {/*region user Routes*/}
@@ -36,6 +42,11 @@ function App() {
                 <Route path="/api/user" element={<UserMainPage/>}/>
                 <Route path="/api/user/products-in-category" element={<ProductsInCategory/>}></Route>
             </Route>
+
+            <Route element={<UserProfileLayout/>}>
+                <Route path="/api/users/me" element={<UserProfile/>}></Route>
+            </Route>
+
             {/*endregion*/}
 
             {/* Dashboard Routes - WITH Sidebar/Header */}

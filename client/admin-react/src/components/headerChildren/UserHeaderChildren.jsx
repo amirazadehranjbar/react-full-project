@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { Dialog, DialogPanel } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import {useState} from 'react'
+import {Dialog, DialogPanel} from '@headlessui/react'
+import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
+import DropdownWithIcon from "../dropdownMenu/DropdownWithIcon.jsx";
 
 const navigation = [
-    { name: 'Product', href: '#' },
-    { name: 'Features', href: '#' },
-    { name: 'Company', href: '#' },
+    {name: 'Product', href: '#'},
+    {name: 'Features', href: '#'},
+    {name: 'Company', href: '#'},
 ]
 
 
@@ -15,7 +16,6 @@ function UserHeaderChildren() {
     return (
         <header className="bg-white w-full shadow-gray-400 shadow-md">
             <nav aria-label="Global" className="mx-auto flex max-w-8xl items-center justify-between p-2 lg:px-3">
-
 
 
                 <div className="flex flex-1">
@@ -33,13 +33,10 @@ function UserHeaderChildren() {
                             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
                         >
                             <span className="sr-only">Open main menu</span>
-                            <Bars3Icon aria-hidden="true" className="size-6" />
+                            <Bars3Icon aria-hidden="true" className="size-6"/>
                         </button>
                     </div>
                 </div>
-
-
-
 
 
                 <a href="#" className="-m-1.5 p-1.5">
@@ -53,17 +50,16 @@ function UserHeaderChildren() {
 
 
                 <div className="flex flex-1 justify-end">
-                    <img src="/src/assets/images/profile.jpg" className="w-10 h-auto rounded-full" alt=""/>
-                    {/*<a href="#" className="text-sm/6 font-semibold text-gray-900">*/}
-                    {/*    <span aria-hidden="true"></span>*/}
-                    {/*</a>*/}
+                    <div className="flex justify-center items-center">
+                    <img src="/src/assets/images/profile.jpg" className="w-12 h-12 rounded-full" alt=""/>
+                    <DropdownWithIcon/>
+                    </div>
                 </div>
-
 
 
             </nav>
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                <div className="fixed inset-0 z-10" />
+                <div className="fixed inset-0 z-10"/>
                 <DialogPanel className="fixed inset-y-0 left-0 z-10 w-full overflow-y-auto bg-white px-6 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex flex-1">
@@ -73,7 +69,7 @@ function UserHeaderChildren() {
                                 className="-m-2.5 rounded-md p-2.5 text-gray-700"
                             >
                                 <span className="sr-only">Close menu</span>
-                                <XMarkIcon aria-hidden="true" className="size-6" />
+                                <XMarkIcon aria-hidden="true" className="size-6"/>
                             </button>
                         </div>
                         <a href="#" className="-m-1.5 p-1.5">

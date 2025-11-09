@@ -4,63 +4,40 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     userName: {
         type: String,
-        required: [true, 'Username is required'],
+        required: true,
         trim: true,
-        minlength: [5, 'Username must be at least 5 characters'],
-        maxlength: [20, 'Username cannot exceed 20 characters']
+        minlength: 5,
+        maxlength: 20
     },
-
-    role:{
+    email: {
         type: String,
-        enum: ['admin' , 'user'],
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+    password: {
+        type: String,
+        // ✅ Password is NOT required (for Google auth users)
+        required: false
+    },
+    profileImg: String,
+
+
+    role: {
+        type: String,
+        enum: ['admin', 'user'],
         default: 'user'
     },
 
-    isLoggedIn: {
-        type: Boolean,
-        default: false
-    },
-
-    isRegistered: {
-        type: Boolean,
-        default: false,
-    },
-
-    email: {
-        type: String,
-        required: [true, 'Email is required'],
-        unique: true,
-        lowercase: true,
-        trim: true,
-        match: [/^\S+@\S+\.\S+$/, 'Invalid email format']
-    },
-
-    password: {
-        type: String,
-        required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters']
-    },
-
-    phone: {
-        type: String,
-    },
-
-    address: {
-        type: String,
-    },
-
-    profileImg: {
-        type: String,
-        default: ''
-    },
 
     lastActive: {
         type: Date,
         default: Date.now
     }
 }, {
-    timestamps: true
+    timestamps: true // Adds createdAt and updatedAt
 });
 
-const UserModel = mongoose.model("User", userSchema);
-module.exports = UserModel;
+
+module.exports = mongoose.model('User', userSchema);

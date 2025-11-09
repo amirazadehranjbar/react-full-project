@@ -40,11 +40,12 @@ const Header = ({children}) => {
 
                     {/*region profile image menu*/}
 
-                    <img
-                        alt=""
-                        src="/src/assets/images/profile.jpg"
-                        className="inline-block size-14 rounded-full"
-                    />
+                        <img
+                            alt=""
+                            src="/src/assets/images/profile.jpg"
+                            className="inline-block size-14 rounded-full"
+                        />
+
 
                     {/*endregion*/}
 

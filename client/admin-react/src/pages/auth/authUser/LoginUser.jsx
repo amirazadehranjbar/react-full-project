@@ -1,15 +1,17 @@
+// client/admin-react/src/pages/auth/authUser/LoginUser.jsx
 import React, {useEffect, useState} from 'react'
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router";
 import {userLogin} from "../../../redux/features/auth/authUserSlice.js";
+import {NavLink} from "react-router-dom";
 
-function AuthUser() {
+function LoginUser() {
 
     const [inputs, setInputs] = useState({email: "", password: ""});
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {message, isLoading, isError} = useSelector(state => state.authUserReducer);
+    const {message, isLoading, isError,success} = useSelector(state => state.authUserReducer);
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ✅ Fixed: Added parentheses
@@ -21,14 +23,15 @@ function AuthUser() {
     }
 
     useEffect(() => {
-        if (message === "Login successful") {
+        console.log(`success is : ${success}`)
+        if (success) {
             navigate("/api/user")
         }
-    }, [message, navigate]);
+    }, [navigate, success]);
 
     return (
         <>
-            <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="flex min-h-full flex-1 flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-md">
                     <img
                         alt="Your Company"
@@ -36,7 +39,7 @@ function AuthUser() {
                         className="mx-auto h-10 w-auto"
                     />
                     <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                        Sign in to your Admin account
+                        Sign in to your User account
                     </h2>
                 </div>
 
@@ -80,11 +83,17 @@ function AuthUser() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-between">
                                 <div className="text-sm/6">
-                                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    <a href="#" className="font-semibold text-sky-700 hover:text-indigo-500">
                                         Forgot password?
                                     </a>
+                                </div>
+
+                                <div className="text-sm/6">
+                                    <NavLink className="font-semibold text-sky-700 hover:text-indigo-500" to="/api/users/register">
+                                        you don`t have an account?
+                                    </NavLink>
                                 </div>
                             </div>
 
@@ -97,7 +106,7 @@ function AuthUser() {
 
                             <div>
                                 <button
-                                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400"
+                                    className="flex w-full justify-center rounded-md bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400"
                                     type="submit"
                                     disabled={isLoading}
                                 >
@@ -107,9 +116,30 @@ function AuthUser() {
                         </form>
                     </div>
                 </div>
+
+                <div className="flex w-1/3">
+
+                    <button
+                        type="button"
+                        className="text-white bg-sky-700 hover:bg-sky-300 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 me-2 mb-2 w-full"
+                        onClick={() => {
+                            // ✅ Redirect to BACKEND, not frontend route
+                            window.location.href = "http://localhost:3000/api/users/auth/google";
+                        }}
+                    >
+                        <svg className="w-6 h-6 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor" viewBox="0 0 18 19">
+                            <path fillRule="evenodd"
+                                  d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z"
+                                  clipRule="evenodd"/>
+                        </svg>
+                        Sign in with Google
+                    </button>
+                </div>
+
             </div>
         </>
     )
 }
 
-export default AuthUser
+export default LoginUser

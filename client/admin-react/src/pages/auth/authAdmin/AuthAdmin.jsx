@@ -1,7 +1,8 @@
+// client/admin-react/src/pages/auth/authAdmin/AuthAdmin.jsx
 import React, {useEffect, useState} from 'react'
 import {useDispatch, useSelector} from "react-redux";
-import {userLogin} from "../../../redux/features/auth/authUserSlice.js";
 import {useNavigate} from "react-router";
+import {adminLogin} from "../../../redux/features/auth/authAdminSlice.js"; // ✅ Import adminLogin
 
 function AuthAdmin() {
 
@@ -9,19 +10,22 @@ function AuthAdmin() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {message, isLoading, isError} = useSelector(state => state.authUserReducer);
+    // ✅ Use authAdminReducer, not authUserReducer
+    const {message, isLoading, isError} = useSelector(state => state.authAdminReducer);
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // ✅ Fixed: Added parentheses
+        e.preventDefault();
 
-        await dispatch(userLogin({
+        // ✅ Use adminLogin instead of userLogin
+        await dispatch(adminLogin({
             email: inputs.email,
             password: inputs.password
         }));
     }
 
     useEffect(() => {
-        if (message === "Login successful") {
+        console.log("Admin message:", message);
+        if (message === "Admin login successful") {  // ✅ Check correct message
             navigate("/admin-dashboard")
         }
     }, [message, navigate]);
@@ -42,7 +46,6 @@ function AuthAdmin() {
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
                     <div className="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-                        {/* ✅ Fixed: Changed action to onSubmit */}
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
@@ -88,10 +91,9 @@ function AuthAdmin() {
                                 </div>
                             </div>
 
-                            {/* ✅ Show error message */}
                             {isError && (
                                 <div className="text-red-600 text-sm text-center">
-                                    Login failed. Please check your credentials.
+                                    {message || "Login failed. Please check your credentials."}
                                 </div>
                             )}
 

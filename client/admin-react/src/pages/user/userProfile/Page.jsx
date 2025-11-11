@@ -39,7 +39,8 @@ function classNames(...classes) {
 
 
 function Page() {
-    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     return (
         <>
             <div>

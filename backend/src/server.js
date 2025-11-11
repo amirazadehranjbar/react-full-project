@@ -4,6 +4,7 @@ require("./config/passport")
 const express = require("express");
 const mongoose = require("mongoose");
 const authUserRouter = require("./routes/authUserRouter");
+const authAdminRouter = require("./routes/authAdminRouter");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const categoryRouter = require("./routes/categoryRouter");
@@ -49,6 +50,7 @@ app.use(passport.session());
 
 // routers
 app.use("/", authUserRouter);
+app.use("/" , authAdminRouter);
 app.use("/", categoryRouter);
 app.use("/", productRouter);
 app.use("/", inventoryRouter);

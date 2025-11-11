@@ -9,7 +9,7 @@ const {loginUserSchema} = require('../validators/userValidator');
 const passport = require('passport');
 const {authenticate, requirePassword, ensureUserAuthenticated} = require("../middleware/authMiddleware");
 
-// region REGISTER
+//region ✅ REGISTER
 router.post("/api/users/register", async (req, res) => {
     try {
         const {userName, email, password} = req.body;

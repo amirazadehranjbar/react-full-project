@@ -1,25 +1,24 @@
+// src/redux/features/auth/authAdminSlice.js
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
-// 🔐 admin don`t have registration
-
 // region login
 export const adminLogin = createAsyncThunk(
-    "auth/userLogin",
+    "auth/adminLogin",  // ✅ Changed to unique name
     async ({email, password}, thunkAPI) => {
         try {
             const res = await axios.post("http://localhost:3500/api/admin/login", {
                 email,
                 password
             }, {
-                withCredentials: true // ✅ Important for cookies
+                withCredentials: true
             });
 
             return res.data;
 
         } catch (e) {
-            console.error("❌ Login error:", e.response?.categories || e.message);
-            return thunkAPI.rejectWithValue(e.response?.categories || e.message || "Admin Login error");
+            console.error("❌ Admin Login error:", e.response?.data || e.message);
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Admin Login error");
         }
     }
 );
@@ -30,11 +29,10 @@ const initialState = {
     email: "",
     profileImg: "",
     role: "admin",
-    phone: "",
-    address: "",
-    message: null,
+       message: null,
     isLoading: false,
     isError: false,
+    isAuthenticated: false,  // ✅ Added
 }
 
 const AuthAdminSlice = createSlice({
@@ -42,18 +40,13 @@ const AuthAdminSlice = createSlice({
     initialState,
 
     reducers: {
-        // Add admin logout action
-        adminLogout: (state) => {
-            state.userName = "";
-            state.email = "";
-            state.role = null;
-            state.message = null;
+        adminLogout: () => {
+            return { ...initialState };  // ✅ Reset to initial state
         }
     },
 
     extraReducers: (builder) => builder
 
-        // LOGIN
         .addCase(adminLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -63,11 +56,10 @@ const AuthAdminSlice = createSlice({
         .addCase(adminLogin.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.isLoggedIn = action.payload.success;
-            state.userName = action.payload.data.userName;
+            state.isAuthenticated = true;  // ✅ Added
+            state.userName = action.payload.data.username;  // ✅ Match backend response
             state.email = action.payload.data.email;
-            state.phone = action.payload.data.phone || "";
-            state.address = action.payload.data.address || "";
+            state.role = action.payload.data.role;  // ✅ Get role from response
             state.profileImg = action.payload.data.profileImg || "";
             state.message = action.payload.message;
         })
@@ -75,12 +67,12 @@ const AuthAdminSlice = createSlice({
         .addCase(adminLogin.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
+            state.isAuthenticated = false;  // ✅ Added
             state.message = action.payload?.message || "Login failed";
-            console.log("Login rejected:", action.payload);
+            console.log("Admin login rejected:", action.payload);
         })
 
 });
-
 
 export const {adminLogout} = AuthAdminSlice.actions;
 export default AuthAdminSlice.reducer;

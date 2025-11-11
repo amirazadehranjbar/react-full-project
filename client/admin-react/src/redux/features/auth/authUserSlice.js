@@ -114,11 +114,89 @@ export const logout = createAsyncThunk(
 
         } catch (e) {
             console.error("❌ Logout error:", e);
-            return { success: true, message: "Logged out locally" };
+            return {success: true, message: "Logged out locally"};
         }
     }
 )
 // endregion
+
+//region ✅ add to cart
+export const addToCart = createAsyncThunk(
+    "auth/addToCart",
+    async ({productID, quantity = 1}, thunkAPI) => {
+        try {
+            const res = await axios.post(
+                "http://localhost:3500/api/users/add-to-cart",
+                {productID, quantity},
+                {withCredentials: true}
+            );
+
+            return res.data;
+
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to add to cart");
+        }
+    }
+);
+//endregion
+
+//region ✅ get cart
+export const getCart = createAsyncThunk(
+    "auth/getCart",
+    async (_, thunkAPI) => {
+        try {
+            const res = await axios.get(
+                "http://localhost:3500/api/users/cart",
+                {withCredentials: true}
+            );
+
+            return res.data;
+
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to get cart");
+        }
+    }
+);
+//endregion
+
+//region ✅ remove from cart
+export const removeFromCart = createAsyncThunk(
+    "auth/removeFromCart",
+    async ({productID}, thunkAPI) => {
+        try {
+            const res = await axios.delete(
+                `http://localhost:3500/api/users/cart/${productID}`,
+                {withCredentials: true}
+            );
+
+            return res.data;
+
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to remove from cart");
+        }
+    }
+);
+//endregion
+
+//region ✅ update cart quantity
+export const updateCartQuantity = createAsyncThunk(
+    "auth/updateCartQuantity",
+    async ({productID, quantity}, thunkAPI) => {
+        try {
+            const res = await axios.put(
+                `http://localhost:3500/api/users/cart/${productID}`,
+                {quantity},
+                {withCredentials: true}
+            );
+
+            return res.data;
+
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to update cart");
+        }
+    }
+);
+//endregion
 
 const initialState = {
     userName: "",
@@ -130,6 +208,7 @@ const initialState = {
     isError: false,
     success: false,
     isAuthenticated: false,
+    data: [],
     cart: {
         items: []
     }
@@ -141,7 +220,7 @@ const AuthUserSlice = createSlice({
 
     reducers: {
         clearAuth: () => {
-            return { ...initialState };
+            return {...initialState};
         }
     },
 
@@ -241,7 +320,7 @@ const AuthUserSlice = createSlice({
             state.isLoading = false;
             state.isError = false;
             state.success = action.payload.success;
-            state.data=action.payload.data;
+            state.data = action.payload.data;
             state.role = action.payload.data.role || "user";
             state.isAuthenticated = true;
         })
@@ -287,14 +366,67 @@ const AuthUserSlice = createSlice({
         })
 
         .addCase(logout.fulfilled, () => {
-            return { ...initialState };
+            return {...initialState};
         })
 
         .addCase(logout.rejected, () => {
-            return { ...initialState };
+            return {...initialState};
         })
-    //endregion
+        //endregion
+
+        //region ✅ add to cart
+        .addCase(addToCart.pending, state => {
+            state.isLoading = true;
+            state.isError = false;
+        })
+
+        .addCase(addToCart.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.isError = false;
+            state.cart = action.payload.cart;
+            state.message = action.payload.message;
+        })
+
+        .addCase(addToCart.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload?.message || "Failed to add to cart";
+        })
+        //endregion
+
+        //region ✅ get cart
+        .addCase(getCart.pending, state => {
+            state.isLoading = true;
+            state.isError = false;
+        })
+
+        .addCase(getCart.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.isError = false;
+            state.cart = action.payload.cart;
+        })
+
+        .addCase(getCart.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload?.message || "Failed to get cart";
+        })
+        //endregion
+
+        //region ✅ remove from cart
+        .addCase(removeFromCart.fulfilled, (state, action) => {
+            state.cart = action.payload.cart;
+            state.message = action.payload.message;
+        })
+        //endregion
+
+        //region ✅ update cart quantity
+        .addCase(updateCartQuantity.fulfilled, (state, action) => {
+            state.cart = action.payload.cart;
+            state.message = action.payload.message;
+        })
+//endregion
 });
 
-export const { clearAuth } = AuthUserSlice.actions;
+export const {clearAuth} = AuthUserSlice.actions;
 export default AuthUserSlice.reducer;

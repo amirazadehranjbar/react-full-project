@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { getProductsByCategory } from "../../redux/features/product/productSlice.js";
 import { useLocation } from "react-router-dom";
 import { RingLoader } from "react-spinners";
+import {addToCart} from "../../redux/features/auth/authUserSlice.js";
 
 function ProductsInCategory() {
     const location = useLocation();
     const categoryID = location.state.categoryID;
+
 
     const { isLoading, isError, message, categoryName, data } = useSelector(state => state.productReducer);
     const dispatch = useDispatch();
@@ -15,6 +17,7 @@ function ProductsInCategory() {
     useEffect(() => {
         dispatch(getProductsByCategory({ categoryID }));
     }, [categoryID, dispatch]);
+
 
     return (
         <div className="bg-white">
@@ -41,10 +44,24 @@ function ProductsInCategory() {
     );
 }
 
-// Separate Product Card Component with Image Gallery
+//region ✅ Separate Product Card Component
 function ProductCard({ product }) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isAdding, setIsAdding] = useState(false);
     const images = product.images || [];
+    const dispatch = useDispatch();
+
+    const handleAddToCart = async () => {
+        setIsAdding(true);
+        try {
+            await dispatch(addToCart({ productID: product._id, quantity: 1 })).unwrap();
+            alert("Product added to cart!"); // Or use a toast notification
+        } catch (error) {
+            alert("Failed to add to cart: " + (error.message || "Please try again"));
+        } finally {
+            setIsAdding(false);
+        }
+    };
 
     const nextImage = () => {
         setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -53,6 +70,7 @@ function ProductCard({ product }) {
     const prevImage = () => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
+
 
     return (
         <div>
@@ -115,13 +133,18 @@ function ProductCard({ product }) {
 
             {/* Add to Cart Button */}
             <div className="mt-6">
-                <button className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-full shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all">
-                    Add to bag
+                <button
+                    className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-full shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                >
+                    {isAdding ? "Adding..." : "Add to bag"}
                 </button>
             </div>
         </div>
     );
 }
+// endregion
 
 export default ProductsInCategory;
 

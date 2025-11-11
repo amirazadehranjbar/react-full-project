@@ -8,6 +8,7 @@ const validateRequest = require('../middleware/validateRequest');
 const {loginUserSchema} = require('../validators/userValidator');
 const passport = require('passport');
 const {authenticate, requirePassword, ensureUserAuthenticated} = require("../middleware/authMiddleware");
+const {ProductModel} = require("../models/productModel");
 
 //region ✅ REGISTER
 router.post("/api/users/register", async (req, res) => {
@@ -198,8 +199,148 @@ router.get("/api/users/logout", ensureUserAuthenticated, async (req, res) => {
 });
 // endregion
 
-//region ✅ add to user`s cart
+//region ✅ add to user's cart
+router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) => {
+    try {
+        const { productID, quantity } = req.body;
 
+        // ✅ Validate productID
+        if (!productID) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
+        }
+
+        // ✅ Check if product exists
+        const product = await ProductModel.findById(productID);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // ✅ Get user and add to cart
+        const user = await User.findById(req.user._id);
+        await user.addToCart(productID, quantity || 1);
+
+        // ✅ Populate cart items with product details
+        await user.populate('cart.items.productID');
+
+        return res.status(200).json({
+            success: true,
+            message: "Product added to cart successfully",
+            cart: user.cart
+        });
+
+    } catch (e) {
+        console.error("❌ Add to cart error:", e);
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Failed to add product to cart"
+        });
+    }
+});
 //endregion
 
+//region ✅ get user's cart
+router.get("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate('cart.items.productID');
+
+        return res.status(200).json({
+            success: true,
+            cart: user.cart
+        });
+
+    } catch (e) {
+        console.error("❌ Get cart error:", e);
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Failed to get cart"
+        });
+    }
+});
+//endregion
+
+//region ✅ remove from cart
+router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
+    try {
+        const { productID } = req.params;
+
+        const user = await User.findById(req.user._id);
+        await user.removeFromCart(productID);
+        await user.populate('cart.items.productID');
+
+        return res.status(200).json({
+            success: true,
+            message: "Product removed from cart",
+            cart: user.cart
+        });
+
+    } catch (e) {
+        console.error("❌ Remove from cart error:", e);
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Failed to remove product from cart"
+        });
+    }
+});
+//endregion
+
+//region ✅ update cart item quantity
+router.put("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
+    try {
+        const { productID } = req.params;
+        const { quantity } = req.body;
+
+        if (!quantity || quantity < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid quantity is required"
+            });
+        }
+
+        const user = await User.findById(req.user._id);
+        await user.updateCartItemQuantity(productID, quantity);
+        await user.populate('cart.items.productID');
+
+        return res.status(200).json({
+            success: true,
+            message: "Cart updated successfully",
+            cart: user.cart
+        });
+
+    } catch (e) {
+        console.error("❌ Update cart error:", e);
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Failed to update cart"
+        });
+    }
+});
+//endregion
+
+//region ✅ clear cart
+router.delete("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        await user.clearCart();
+
+        return res.status(200).json({
+            success: true,
+            message: "Cart cleared successfully",
+            cart: user.cart
+        });
+
+    } catch (e) {
+        console.error("❌ Clear cart error:", e);
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Failed to clear cart"
+        });
+    }
+});
+//endregion
 module.exports = router;

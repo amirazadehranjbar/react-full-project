@@ -2,26 +2,28 @@ import {useState} from 'react'
 import {Dialog, DialogPanel} from '@headlessui/react'
 import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
 import DropdownWithIcon from "../dropdownMenu/DropdownWithIcon.jsx";
+import {useSelector} from "react-redux";
 
 const navigation = [
-    {name: 'Product', href: '#'},
+    {name: 'Home', href: '/api/user'},
     {name: 'Features', href: '#'},
     {name: 'Company', href: '#'},
 ]
 
 
 function UserHeaderChildren() {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const {data} = useSelector(state => state.authUserReducer);
 
     return (
-        <header className="bg-white w-full shadow-gray-400 shadow-md">
+        <header className="bg-gray-200 w-full shadow-gray-800 shadow-md">
             <nav aria-label="Global" className="mx-auto flex max-w-8xl items-center justify-between p-2 lg:px-3">
 
 
                 <div className="flex flex-1">
                     <div className="hidden lg:flex lg:gap-x-12">
                         {navigation.map((item) => (
-                            <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-gray-900">
+                            <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-gray-900 hover:bg-gray-500 p-1 rounded-md hover:text-slate-300">
                                 {item.name}
                             </a>
                         ))}
@@ -48,13 +50,15 @@ function UserHeaderChildren() {
                     />
                 </a>
 
-
+                {/*region ✅ profile image and name and drop menu */}
                 <div className="flex flex-1 justify-end">
                     <div className="flex justify-center items-center">
-                    <img src="/src/assets/images/profile.jpg" className="w-12 h-12 rounded-full" alt=""/>
+                        <p className="mr-2 font-mono sm:text-sm max-sm:hidden">{data.username || ""}</p>
+                    <img src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"} className="w-12 h-12 rounded-full" alt=""/>
                     <DropdownWithIcon/>
                     </div>
                 </div>
+                {/*endregion*/}
 
 
             </nav>

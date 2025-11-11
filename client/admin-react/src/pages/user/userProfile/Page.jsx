@@ -3,7 +3,7 @@ import {Dialog, DialogBackdrop, DialogPanel, TransitionChild} from '@headlessui/
 import {
     ChartBarSquareIcon,
     Cog6ToothIcon,
-    FolderIcon,
+    HomeModernIcon,
     GlobeAltIcon,
     ServerIcon,
     SignalIcon,
@@ -14,7 +14,7 @@ import {ChevronDownIcon} from '@heroicons/react/16/solid'
 import {useSelector} from "react-redux";
 
 const navigation = [
-    {name: 'Projects', href: '#', icon: FolderIcon, current: false},
+    {name: 'Home', href: '/api/user', icon: HomeModernIcon, current: false},
     {name: 'Deployments', href: '#', icon: ServerIcon, current: false},
     {name: 'Activity', href: '#', icon: SignalIcon, current: false},
     {name: 'Domains', href: '#', icon: GlobeAltIcon, current: false},

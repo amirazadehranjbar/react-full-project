@@ -113,19 +113,9 @@ const updateUserSchema = Joi.object({
         .max(20)
         .optional(),
 
-    phone: Joi.string()
-        .pattern(/^[0-9]{10,15}$/)
-        .optional(),
-
-    address: Joi.string()
-        .optional(),
-
     profileImg: Joi.string()
         .uri()
         .optional(),
-
-    isLoggedIn: Joi.boolean()
-        .optional()
 }).min(1);
 
 module.exports = {

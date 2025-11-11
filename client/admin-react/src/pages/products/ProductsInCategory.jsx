@@ -58,7 +58,7 @@ function ProductCard({ product }) {
         <div>
             <div className="relative">
                 {/* Main Image */}
-                <div className="relative h-72 w-full overflow-hidden rounded-lg group">
+                <div className="relative h-72 w-full overflow-hidden rounded-lg group shadow-xl ring-slate-200 ring-1">
                     <img
                         alt={product.name}
                         src={images[currentImageIndex] || '/placeholder.png'}
@@ -115,7 +115,7 @@ function ProductCard({ product }) {
 
             {/* Add to Cart Button */}
             <div className="mt-6">
-                <button className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-full">
+                <button className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-full shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all">
                     Add to bag
                 </button>
             </div>
@@ -124,3 +124,24 @@ function ProductCard({ product }) {
 }
 
 export default ProductsInCategory;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

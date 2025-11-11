@@ -2,7 +2,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
-// region user register
+// region ✅ user register
 export const userRegister = createAsyncThunk(
     "auth/userRegister",
     async ({userName, email, password}, thunkAPI) => {
@@ -24,7 +24,7 @@ export const userRegister = createAsyncThunk(
 );
 // endregion
 
-// region user login
+// region ✅ user login
 export const userLogin = createAsyncThunk(
     "auth/userLogin",
     async ({email, password}, thunkAPI) => {
@@ -45,7 +45,7 @@ export const userLogin = createAsyncThunk(
 );
 //endregion
 
-// region admin login
+// region ✅ admin login
 export const adminLogin = createAsyncThunk(
     "auth/adminLogin",
     async ({email, password}, thunkAPI) => {
@@ -66,7 +66,7 @@ export const adminLogin = createAsyncThunk(
 );
 //endregion
 
-//region user profile - ME
+//region ✅ user profile - ME
 export const userProfile = createAsyncThunk(
     "auth/userProfile",
     async (_, thunkAPI) => {
@@ -75,6 +75,7 @@ export const userProfile = createAsyncThunk(
                 withCredentials: true,
             });
 
+            console.log(res.data)
             return res.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response?.data || e.message || "Can't get profile data");

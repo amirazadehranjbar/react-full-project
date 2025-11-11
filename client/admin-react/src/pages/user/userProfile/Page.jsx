@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline'
 import {Bars3Icon, MagnifyingGlassIcon} from '@heroicons/react/20/solid'
 import {ChevronDownIcon} from '@heroicons/react/16/solid'
+import {useSelector} from "react-redux";
 
 const navigation = [
     {name: 'Projects', href: '#', icon: FolderIcon, current: false},
@@ -40,6 +41,7 @@ function classNames(...classes) {
 
 function Page() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const {data} = useSelector(state => state.authUserReducer)
 
     return (
         <>
@@ -128,11 +130,11 @@ function Page() {
                                             >
                                                 <img
                                                     alt=""
-                                                    src="/src/assets/images/profile.jpg"
+                                                    src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
                                                     className="size-8 rounded-full bg-gray-800"
                                                 />
                                                 <span className="sr-only">Your profile</span>
-                                                <span aria-hidden="true">Amir azadeh ranjbar</span>
+                                                <span aria-hidden="true">{data.username || ""}</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -149,7 +151,7 @@ function Page() {
                         <div className="flex h-16 shrink-0 items-center">
                             <img
                                 alt="Your Company"
-                                src="/src/assets/images/logo.png"
+                                src={data.profileImg || "/src/assets/images/logo.png"}
                                 className="h-12 w-auto"
                             />
                         </div>
@@ -206,11 +208,11 @@ function Page() {
                                     >
                                         <img
                                             alt=""
-                                            src="/src/assets/images/profile.jpg"
+                                            src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
                                             className="size-8 rounded-full bg-gray-800"
                                         />
                                         <span className="sr-only">Your profile</span>
-                                        <span aria-hidden="true">Amir azadeh ranjbar</span>
+                                        <span aria-hidden="true">{data.username || ""}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -285,7 +287,7 @@ function Page() {
                                         <div className="col-span-full flex items-center gap-x-8">
                                             <img
                                                 alt=""
-                                                src="/src/assets/images/profile.jpg"
+                                                src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
                                                 className="size-24 flex-none rounded-lg bg-gray-800 object-cover"
                                             />
                                             <div>

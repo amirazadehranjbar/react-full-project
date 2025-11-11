@@ -9,7 +9,7 @@ import AuthSelection from "./pages/auth/AuthSelection.jsx";
 import AuthLayout from "./layouts/AuthLayout.jsx";
 import DashboardLayout from "./layouts/DashboardLayout.jsx";
 import AuthAdmin from "./pages/auth/authAdmin/AuthAdmin.jsx";
-import ProtectedRoute from "./protectedRoutes/ProtectedRoute.jsx";
+import UserProtectedRoute from "./protectedRoutes/userProtectedRoute.jsx";
 import SelectReportAdminDashboard from "./pages/adminDashboard/SelectReportAdminDashboard.jsx";
 import Inventory from "./pages/adminDashboard/inventory/Inventory.jsx";
 import InventoryLayout from "./layouts/InventoryLayout.jsx";
@@ -17,10 +17,10 @@ import LoginUser from "./pages/auth/authUser/LoginUser.jsx";
 import UserLayout from "./layouts/UserLayout.jsx";
 import UserMainPage from "./pages/user/UserMainPage.jsx";
 import ProductsInCategory from "./pages/products/ProductsInCategory.jsx";
-import AuthGoogle from "./pages/auth/authUser/AuthGoogle.jsx";
 import RegisterUser from "./pages/auth/authUser/RegisterUser.jsx";
 import UserProfile from "./pages/user/userProfile/UserProfile.jsx";
 import UserProfileLayout from "./layouts/UserProfileLayout.jsx";
+import AdminProtectedRoutes from "./protectedRoutes/AdminProtectedRoutes.jsx";
 
 function App() {
     const location = useLocation();
@@ -28,35 +28,36 @@ function App() {
 
     return (
         <Routes location={backgroundLocation || location}>
-            {/* Auth Routes - NO Sidebar/Header */}
+            {/*region Publish Routes*/}
             <Route element={<AuthLayout/>}>
                 <Route path="/" element={<AuthSelection/>}/>
                 <Route path="/api/admin/login" element={<AuthAdmin/>}/>
                 <Route path="/api/users/login" element={<LoginUser/>}></Route>
                 <Route path="/api/users/register" element={<RegisterUser/>}></Route>
-                <Route path="/api/users/auth/google" element={<AuthGoogle/>}></Route>
             </Route>
+            {/*endregion*/}
 
-            {/*region user Routes*/}
-            <Route element={<UserLayout/>}>
-                <Route path="/api/user" element={<UserMainPage/>}/>
-                <Route path="/api/user/products-in-category" element={<ProductsInCategory/>}></Route>
-            </Route>
+            {/*region Protected User Routes*/}
+            <Route element={<UserProtectedRoute/>}>
+                <Route element={<UserLayout/>}>
+                    <Route path="/api/user" element={<UserMainPage/>}/>
+                    <Route path="/api/user/products-in-category" element={<ProductsInCategory/>}></Route>
+                </Route>
 
-            <Route element={<UserProfileLayout/>}>
-                <Route path="/api/users/me" element={<UserProfile/>}></Route>
+                <Route element={<UserProfileLayout/>}>
+                    <Route path="/api/users/me" element={<UserProfile/>}></Route>
+                </Route>
             </Route>
 
             {/*endregion*/}
 
-            {/* Dashboard Routes - WITH Sidebar/Header */}
-            <Route element={<ProtectedRoute/>}>
+            {/*region Protected Admin Routes*/}
+            <Route element={<AdminProtectedRoutes/>}>
 
 
                 <Route element={<InventoryLayout/>}>
                     <Route path="/admin/inventory" element={<Inventory/>}></Route>
                 </Route>
-
 
 
                 <Route element={<DashboardLayout/>}>
@@ -67,6 +68,9 @@ function App() {
                     <Route path="/store/manageGuaranties" element={<ManageGuaranties/>}/>
                 </Route>
             </Route>
+            {/*endregion*/}
+
+
         </Routes>
     );
 }

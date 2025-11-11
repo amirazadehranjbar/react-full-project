@@ -63,6 +63,44 @@ export const userProfile = createAsyncThunk(
 )
 // endregion
 
+//region ✅ google auth user
+export const authGoogle = createAsyncThunk(
+    "authGoogle",
+    async (_,thunkAPI)=>{
+
+        try {
+            const res = await axios.get("http://localhost:3500/api/users/auth/google/callback", {withCredentials: true});
+            console.log(res.data)
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+
+    }
+)
+//endregion
+
+//region ✅ logout - FIXED: Removed useNavigate
+export const logout = createAsyncThunk(
+    "auth/logout",
+    async (_, thunkAPI) => {
+        try {
+            const res = await axios.get("http://localhost:3500/api/users/logout", {
+                withCredentials: true
+            });
+
+            console.log(`res.data from logout:`, res.data);
+
+            return res.data;
+
+        } catch (e) {
+            console.error("❌ Logout error:", e);
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Logout failed");
+        }
+    }
+)
+// endregion
+
+
 const initialState = {
     userName: "",
     email: "",
@@ -71,6 +109,10 @@ const initialState = {
     isLoading: false,
     isError: false,
     success: false,
+    isAuthenticated: false,
+    cart: {
+        items: []
+    }
 }
 
 const AuthUserSlice = createSlice({
@@ -100,11 +142,12 @@ const AuthUserSlice = createSlice({
         .addCase(userLogin.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.userName = action.payload.data.userName;
+            state.userName = action.payload.data.username; // ✅ Fixed: was userName
             state.email = action.payload.data.email;
             state.profileImg = action.payload.data.profileImg || "";
             state.message = action.payload.message;
             state.success = action.payload.success;
+            state.isAuthenticated = true; // ✅ Add this
         })
 
         .addCase(userLogin.rejected, (state, action) => {
@@ -112,26 +155,25 @@ const AuthUserSlice = createSlice({
             state.isError = true;
             state.message = action.payload?.message || "Login failed";
             state.success = false;
+            state.isAuthenticated = false;
         })
         // endregion
 
         //region REGISTER
-        .addCase(userRegister.pending, (state ,action) => {
+        .addCase(userRegister.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
-            state.success = action.payload.success;
-            state.message = action.payload.message;
+            state.success = false;
         })
 
         .addCase(userRegister.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            console.log(state.data)
             state.userName = action.payload.data.userName;
             state.email = action.payload.data.email;
-            state.password = action.payload.password;
             state.message = action.payload.message;
             state.success = action.payload.success;
+            state.isAuthenticated = true;
         })
 
         .addCase(userRegister.rejected, (state, action) => {
@@ -163,6 +205,33 @@ const AuthUserSlice = createSlice({
             state.message = action.payload.message;
         })
 
+    //endregion
+
+        //region logout
+        .addCase(logout.pending, state => {
+            state.isLoading = true;
+            state.isError = false;
+        })
+
+        .addCase(logout.fulfilled, (state, action) => {
+            // ✅ Clear all user data on successful logout
+            state.isLoading = false;
+            state.isError = false;
+            state.userName = "";
+            state.email = "";
+            state.profileImg = "";
+            state.message = action.payload.message;
+            state.success = action.payload.success;
+            state.isAuthenticated = false;
+            state.cart = { items: [] };
+        })
+
+        .addCase(logout.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.success = false;
+            state.message = action.payload?.message || "Logout failed";
+        })
     //endregion
 });
 

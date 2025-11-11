@@ -188,7 +188,7 @@ function RegisterUser() {
                         className="text-white bg-sky-700 hover:bg-sky-300 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-[#4285F4]/55 me-2 mb-2 w-full"
                         onClick={() => {
                             // ✅ Redirect to BACKEND, not frontend route
-                            window.location.href = "http://localhost:3000/api/users/auth/google";
+                            window.location.href = "http://localhost:3500/api/users/auth/google";
                         }}
                     >
                         <svg className="w-6 h-6 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"

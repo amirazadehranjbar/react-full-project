@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3500','http://localhost:5173'],
+    origin: ['http://localhost:3000', 'http://localhost:3500', 'http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -49,9 +49,9 @@ app.use(passport.session());
 
 // routers
 app.use("/", authUserRouter);
-app.use("/" , categoryRouter);
-app.use("/",productRouter);
-app.use("/" , inventoryRouter);
+app.use("/", categoryRouter);
+app.use("/", productRouter);
+app.use("/", inventoryRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server listening on port ${PORT}`);

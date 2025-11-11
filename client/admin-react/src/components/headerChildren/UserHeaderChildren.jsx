@@ -1,8 +1,10 @@
-import {useState} from 'react'
-import {Dialog, DialogPanel} from '@headlessui/react'
-import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
+import {useEffect, useState} from 'react'
+import {Dialog, DialogPanel} from '@headlessui/react';
+import {Bars3Icon, XMarkIcon, BellAlertIcon, ShoppingBagIcon} from '@heroicons/react/24/outline';
 import DropdownWithIcon from "../dropdownMenu/DropdownWithIcon.jsx";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {getCart} from "../../redux/features/auth/authUserSlice.js";
+import {useNavigate} from "react-router-dom";
 
 const navigation = [
     {name: 'Home', href: '/api/user'},
@@ -13,7 +15,15 @@ const navigation = [
 
 function UserHeaderChildren() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const {data} = useSelector(state => state.authUserReducer);
+    const {data, cart} = useSelector(state => state.authUserReducer);
+
+    const dispatch = useDispatch();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(getCart())
+    }, [dispatch]);
 
     return (
         <header className="bg-gray-200 w-full shadow-gray-800 shadow-md">
@@ -23,7 +33,8 @@ function UserHeaderChildren() {
                 <div className="flex flex-1">
                     <div className="hidden lg:flex lg:gap-x-12">
                         {navigation.map((item) => (
-                            <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-gray-900 hover:bg-gray-500 p-1 rounded-md hover:text-slate-300">
+                            <a key={item.name} href={item.href}
+                               className="text-sm/6 font-semibold text-gray-900 hover:bg-gray-500 p-1 rounded-md hover:text-slate-300">
                                 {item.name}
                             </a>
                         ))}
@@ -53,9 +64,19 @@ function UserHeaderChildren() {
                 {/*region ✅ profile image and name and drop menu */}
                 <div className="flex flex-1 justify-end">
                     <div className="flex justify-center items-center">
-                        <p className="mr-2 font-mono sm:text-sm max-sm:hidden">{data.username || ""}</p>
-                    <img src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"} className="w-12 h-12 rounded-full" alt=""/>
-                    <DropdownWithIcon/>
+
+
+                        <div className="relative mr-2">
+                            <ShoppingBagIcon className="text-sky-700 size-6 mr-2 cursor-pointer" onClick={() => {
+                                navigate("/api/user/cart")
+                            }}/>
+                            <span
+                                className="absolute -top-1 -right-1 flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-semibold text-white bg-red-600 rounded-full animate-pulse">{cart.items.length || 0}</span>
+                        </div>
+                        <BellAlertIcon className="text-sky-700 size-6 mr-2"/>
+                        <img src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
+                             className="w-12 h-12 rounded-full" alt=""/>
+                        <DropdownWithIcon/>
                     </div>
                 </div>
                 {/*endregion*/}

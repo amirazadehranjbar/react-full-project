@@ -221,7 +221,8 @@ const AuthUserSlice = createSlice({
     reducers: {
         clearAuth: () => {
             return {...initialState};
-        }
+        },
+
     },
 
     extraReducers: (builder) => builder

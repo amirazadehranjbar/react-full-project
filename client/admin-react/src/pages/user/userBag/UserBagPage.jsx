@@ -92,11 +92,11 @@ function UserBagPage() {
                                                             {product.productID.name || ""}
                                                         </a>
                                                     </h3>
-                                                    <p className="mt-1 text-sm text-gray-500">{product.color}</p>
-                                                    {product.size ? <p className="mt-1 text-sm text-gray-500">{product.size}</p> : null}
+                                                    <p className="mt-1 text-sm text-gray-500">{product.isOnSale}</p>
+                                                    {product.isOnSale ? <p className="mt-1 text-sm text-gray-500">{product.isOnSale}</p> : null}
                                                 </div>
 
-                                                <p className="text-right text-sm font-medium text-gray-900">{product.price}</p>
+                                                <p className="text-right text-sm font-medium text-gray-100">$ {product.productID.price}</p>
                                             </div>
 
                                             <div className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">

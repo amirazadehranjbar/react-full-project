@@ -40,7 +40,7 @@ function UserProtectedRoute() {
         // return <Navigate to="/api/users/login" replace />; // if I uncomment this line my login page put in loop
     }
 
-    console.log("✅ User authenticated, rendering protected route");
+    //console.log("✅ User authenticated, rendering protected route");
     // ✅ User is authenticated, render protected content
     return <Outlet />;
 }

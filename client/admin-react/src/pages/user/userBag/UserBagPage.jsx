@@ -101,6 +101,8 @@ function UserBagPage() {
         );
     }
 
+    console.log(cart)
+
     return (
         <div className="bg-gray-400 min-h-screen">
             <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">

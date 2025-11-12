@@ -75,7 +75,6 @@ export const userProfile = createAsyncThunk(
                 withCredentials: true,
             });
 
-            console.log(res.data)
             return res.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response?.data || e.message || "Can't get profile data");
@@ -92,7 +91,6 @@ export const authGoogle = createAsyncThunk(
             const res = await axios.get("http://localhost:3500/api/users/auth/google/callback", {
                 withCredentials: true
             });
-            console.log(res.data);
             return res.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response?.data || e.message || "Google auth failed");

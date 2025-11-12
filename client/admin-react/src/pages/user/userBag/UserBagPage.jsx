@@ -1,70 +1,108 @@
 import {useDispatch, useSelector} from "react-redux";
 import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { CheckIcon, ClockIcon } from '@heroicons/react/20/solid'
-import {useEffect} from "react";
-import {getCart} from "../../../redux/features/auth/authUserSlice.js";
-
-const products = [
-    {
-        id: 1,
-        name: 'Nomad Tumbler',
-        href: '#',
-        price: '$35.00',
-        color: 'White',
-        inStock: true,
-        imageSrc: 'https://tailwindui.com/plus-assets/img/ecommerce-images/shopping-cart-page-01-product-03.jpg',
-        imageAlt: 'Insulated bottle with white base and black snap lid.',
-    },
-    {
-        id: 2,
-        name: 'Basic Tee',
-        href: '#',
-        price: '$32.00',
-        color: 'Sienna',
-        inStock: true,
-        size: 'Large',
-        imageSrc: 'https://tailwindui.com/plus-assets/img/ecommerce-images/shopping-cart-page-01-product-01.jpg',
-        imageAlt: "Front of men's Basic Tee in sienna.",
-    },
-    // More products...
-]
+import {useEffect, useMemo} from "react";
+import {getCart, updateCartQuantity, removeFromCart} from "../../../redux/features/auth/authUserSlice.js";
 
 function UserBagPage() {
 
-    const {isLoading , isError ,  cart} = useSelector(state=>state.authUserReducer);
-
-    const dispatch = useDispatch()
+    const {isLoading, isError, cart} = useSelector(state => state.authUserReducer);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getCart());
     }, [dispatch]);
 
-    console.log(cart)
+    // ✅ Calculate totals using useMemo for performance
+    const cartTotals = useMemo(() => {
+        if (!cart?.items || cart.items.length === 0) {
+            return {
+                subtotal: 0,
+                shipping: 0,
+                tax: 0,
+                total: 0
+            };
+        }
 
-    if(isLoading){
+        // Calculate subtotal
+        const subtotal = cart.items.reduce((sum, item) => {
+            const price = Number(item.productID?.price) || 0;
+            const quantity = Number(item.quantity) || 0;
+            return sum + (price * quantity);
+        }, 0);
+
+        // Calculate shipping (free if over $50, otherwise $5)
+        const shipping = subtotal > 50 ? 0 : 5;
+
+        // Calculate tax (assuming 8% tax rate)
+        const tax = subtotal * 0.08;
+
+        // Calculate total
+        const total = subtotal + shipping + tax;
+
+        return {
+            subtotal: subtotal.toFixed(2),
+            shipping: shipping.toFixed(2),
+            tax: tax.toFixed(2),
+            total: total.toFixed(2)
+        };
+    }, [cart?.items]);
+
+    // ✅ Handle quantity change
+    const handleQuantityChange = async (productID, newQuantity) => {
+        try {
+            await dispatch(updateCartQuantity({
+                productID,
+                quantity: parseInt(newQuantity)
+            })).unwrap();
+        } catch (error) {
+            console.error("Failed to update quantity:", error);
+            alert("Failed to update quantity");
+        }
+    };
+
+    // ✅ Handle remove item
+    const handleRemoveItem = async (productID) => {
+        try {
+            await dispatch(removeFromCart({ productID })).unwrap();
+        } catch (error) {
+            console.error("Failed to remove item:", error);
+            alert("Failed to remove item");
+        }
+    };
+
+    if (isLoading) {
         return (
-            <div>
-                Loading . . .
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
             </div>
         );
     }
 
-    if(isError){
+    if (isError) {
         return (
-            <div>
-                Error . . .
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-red-600 text-xl">Error loading cart. Please try again.</div>
             </div>
         );
     }
 
-    if(cart.items.length===0){
-        return (<div>
-            your bag is empty
-        </div>);
+    if (!cart?.items || cart.items.length === 0) {
+        return (
+            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+                <div className="text-2xl font-semibold text-gray-700 mb-4">Your bag is empty</div>
+                <a
+                    href="/api/user"
+                    className="text-indigo-600 hover:text-indigo-500 font-medium"
+                >
+                    Continue Shopping →
+                </a>
+            </div>
+        );
     }
 
     return (
-        <div className="bg-gray-400">
+        <div className="bg-gray-400 min-h-screen">
             <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
                 <h1 className="text-3xl font-bold tracking-tight text-gray-300 font-mono">Shopping Cart</h1>
 
@@ -73,76 +111,90 @@ function UserBagPage() {
                         <h2 className="sr-only">Items in your shopping cart</h2>
 
                         <ul role="list" className="divide-y divide-gray-200 border-t border-b border-gray-200">
-                            {cart.items.map((product, productIdx) => (
-                                <li key={product.id} className="flex py-6 sm:py-10">
-                                    <div className="shrink-0">
-                                        <img
-                                            alt=""
-                                            src={product.productID.images.length>1 ? product.productID.images[0] : product.productID.images}
-                                            className="size-24 rounded-lg object-cover sm:size-32"
-                                        />
-                                    </div>
+                            {cart.items.map((item, productIdx) => {
+                                const product = item.productID;
+                                const itemTotal = (Number(product?.price) || 0) * (Number(item.quantity) || 0);
 
-                                    <div className="relative ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                                        <div>
-                                            <div className="flex justify-between sm:grid sm:grid-cols-2">
-                                                <div className="pr-6">
-                                                    <h3 className="text-sm">
-                                                        <a href="#" className="font-medium text-gray-700 hover:text-gray-800">
-                                                            {product.productID.name || ""}
-                                                        </a>
-                                                    </h3>
-                                                    <p className="mt-1 text-sm text-gray-500">{product.isOnSale}</p>
-                                                    {product.isOnSale ? <p className="mt-1 text-sm text-gray-500">{product.isOnSale}</p> : null}
-                                                </div>
-
-                                                <p className="text-right text-sm font-medium text-gray-100">$ {product.productID.price}</p>
-                                            </div>
-
-                                            <div className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">
-                                                <div className="inline-grid w-full max-w-16 grid-cols-1">
-                                                    <select
-                                                        name={`quantity-${productIdx}`}
-                                                        aria-label={`Quantity, ${product.productID.name}`}
-                                                        defaultValue={product.quantity.toString()}
-                                                        className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                                                    >
-                                                        <option value={1}>1</option>
-                                                        <option value={2}>2</option>
-                                                        <option value={3}>3</option>
-                                                        <option value={4}>4</option>
-                                                        <option value={5}>5</option>
-                                                        <option value={6}>6</option>
-                                                        <option value={7}>7</option>
-                                                        <option value={8}>8</option>
-                                                    </select>
-                                                    <ChevronDownIcon
-                                                        aria-hidden="true"
-                                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                                                    />
-                                                </div>
-
-                                                <button
-                                                    type="button"
-                                                    className="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 sm:mt-3 sm:ml-0"
-                                                >
-                                                    <span>Remove</span>
-                                                </button>
-                                            </div>
+                                return (
+                                    <li key={item._id || productIdx} className="flex py-6 sm:py-10">
+                                        <div className="shrink-0">
+                                            <img
+                                                alt={product?.name || "Product"}
+                                                src={Array.isArray(product?.images) && product.images.length > 0
+                                                    ? product.images[0]
+                                                    : '/placeholder.png'}
+                                                className="size-24 rounded-lg object-cover sm:size-32"
+                                            />
                                         </div>
 
-                                        <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                                            {product.inStock ? (
-                                                <CheckIcon aria-hidden="true" className="size-5 shrink-0 text-green-500" />
-                                            ) : (
-                                                <ClockIcon aria-hidden="true" className="size-5 shrink-0 text-gray-300" />
-                                            )}
+                                        <div className="relative ml-4 flex flex-1 flex-col justify-between sm:ml-6">
+                                            <div>
+                                                <div className="flex justify-between sm:grid sm:grid-cols-2">
+                                                    <div className="pr-6">
+                                                        <h3 className="text-sm">
+                                                            <a href="#" className="font-medium text-gray-700 hover:text-gray-800">
+                                                                {product?.name || "Unknown Product"}
+                                                            </a>
+                                                        </h3>
+                                                        {product?.isOnSale && (
+                                                            <p className="mt-1 text-sm text-red-600 font-semibold">ON SALE</p>
+                                                        )}
+                                                        <p className="mt-1 text-sm text-gray-600">
+                                                            ${product?.price} × {item.quantity} = ${itemTotal.toFixed(2)}
+                                                        </p>
+                                                    </div>
 
-                                            <span>{product.inStock ? 'In stock' : `Ships in ${product.leadTime}`}</span>
-                                        </p>
-                                    </div>
-                                </li>
-                            ))}
+                                                    <p className="text-right text-sm font-medium text-gray-900">
+                                                        ${itemTotal.toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                                <div className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">
+                                                    <div className="inline-grid w-full max-w-16 grid-cols-1">
+                                                        <select
+                                                            name={`quantity-${productIdx}`}
+                                                            aria-label={`Quantity, ${product?.name}`}
+                                                            value={item.quantity}
+                                                            onChange={(e) => handleQuantityChange(product._id, e.target.value)}
+                                                            className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                                        >
+                                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                                                <option key={num} value={num}>{num}</option>
+                                                            ))}
+                                                        </select>
+                                                        <ChevronDownIcon
+                                                            aria-hidden="true"
+                                                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                                        />
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveItem(product._id)}
+                                                        className="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 sm:mt-3 sm:ml-0"
+                                                    >
+                                                        <span>Remove</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+                                                {product?.inventory > 0 ? (
+                                                    <>
+                                                        <CheckIcon aria-hidden="true" className="size-5 shrink-0 text-green-500" />
+                                                        <span>In stock ({product.inventory} available)</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ClockIcon aria-hidden="true" className="size-5 shrink-0 text-gray-300" />
+                                                        <span>Out of stock</span>
+                                                    </>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
 
@@ -153,25 +205,43 @@ function UserBagPage() {
 
                             <div className="flow-root">
                                 <dl className="-my-4 divide-y divide-gray-200 text-sm">
+                                    {/* Subtotal */}
                                     <div className="flex items-center justify-between py-4">
                                         <dt className="text-gray-600">Subtotal</dt>
-                                        <dd className="font-medium text-gray-900">$99.00</dd>
+                                        <dd className="font-medium text-gray-900">${cartTotals.subtotal}</dd>
                                     </div>
+
+                                    {/* Shipping */}
                                     <div className="flex items-center justify-between py-4">
-                                        <dt className="text-gray-600">Shipping</dt>
-                                        <dd className="font-medium text-gray-900">$5.00</dd>
+                                        <dt className="text-gray-600">
+                                            Shipping
+                                            {Number(cartTotals.shipping) === 0 && (
+                                                <span className="text-green-600 ml-2">(Free!)</span>
+                                            )}
+                                        </dt>
+                                        <dd className="font-medium text-gray-900">${cartTotals.shipping}</dd>
                                     </div>
+
+                                    {/* Tax */}
                                     <div className="flex items-center justify-between py-4">
-                                        <dt className="text-gray-600">Tax</dt>
-                                        <dd className="font-medium text-gray-900">$8.32</dd>
+                                        <dt className="text-gray-600">Tax (8%)</dt>
+                                        <dd className="font-medium text-gray-900">${cartTotals.tax}</dd>
                                     </div>
+
+                                    {/* Total */}
                                     <div className="flex items-center justify-between py-4">
                                         <dt className="text-base font-medium text-gray-900">Order total</dt>
-                                        <dd className="text-base font-medium text-gray-900">$112.32</dd>
+                                        <dd className="text-base font-medium text-gray-900">${cartTotals.total}</dd>
                                     </div>
                                 </dl>
                             </div>
+
+                            {/* Item count */}
+                            <div className="mt-4 text-center text-sm text-gray-500">
+                                Total items: {cart.items.reduce((sum, item) => sum + item.quantity, 0)}
+                            </div>
                         </div>
+
                         <div className="mt-10">
                             <button
                                 type="submit"
@@ -184,7 +254,7 @@ function UserBagPage() {
                         <div className="mt-6 text-center text-sm text-gray-500">
                             <p>
                                 or{' '}
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                <a href="/api/user" className="font-medium text-indigo-600 hover:text-indigo-500">
                                     Continue Shopping
                                     <span aria-hidden="true"> &rarr;</span>
                                 </a>

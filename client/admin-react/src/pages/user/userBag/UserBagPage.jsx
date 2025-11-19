@@ -1,8 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
-import { CheckIcon, ClockIcon } from '@heroicons/react/20/solid'
+import {ChevronDownIcon} from '@heroicons/react/16/solid'
+import {CheckIcon, ClockIcon , TrashIcon} from '@heroicons/react/20/solid'
 import {useEffect, useMemo} from "react";
 import {getCart, updateCartQuantity, removeFromCart} from "../../../redux/features/auth/authUserSlice.js";
+import Swal from "sweetalert2";
 
 function UserBagPage() {
 
@@ -13,7 +14,7 @@ function UserBagPage() {
         dispatch(getCart());
     }, [dispatch]);
 
-    // ✅ Calculate totals using useMemo for performance
+    //region ✅ Calculate totals using useMemo for performance
     const cartTotals = useMemo(() => {
         if (!cart?.items || cart.items.length === 0) {
             return {
@@ -47,8 +48,9 @@ function UserBagPage() {
             total: total.toFixed(2)
         };
     }, [cart?.items]);
+    // endregion
 
-    // ✅ Handle quantity change
+    //region ✅ Handle quantity change
     const handleQuantityChange = async (productID, newQuantity) => {
         try {
             await dispatch(updateCartQuantity({
@@ -60,17 +62,36 @@ function UserBagPage() {
             alert("Failed to update quantity");
         }
     };
+    // endregion
 
-    // ✅ Handle remove item
+    //region ✅ Handle remove item
     const handleRemoveItem = async (productID) => {
-        try {
-            await dispatch(removeFromCart({ productID })).unwrap();
-        } catch (error) {
-            console.error("Failed to remove item:", error);
-            alert("Failed to remove item");
-        }
-    };
 
+        Swal.fire({
+            title: "Do you want to delete this product?",
+            showDenyButton: true,
+            confirmButtonText: "Delet",
+            denyButtonText: `Cancel`
+        }).then(async (result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                try {
+                    await dispatch(removeFromCart({productID})).unwrap();
+                    Swal.fire("Deleted!", "", "success");
+                } catch (error) {
+                    console.error("Failed to remove item:", error);
+                    alert("Failed to remove item");
+                }
+
+            } else if (result.isDenied) {
+                Swal.fire("Delete Product is stop", "", "info");
+            }
+        });
+
+    };
+    // endregion
+
+    // region ✅ Loading
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -78,7 +99,9 @@ function UserBagPage() {
             </div>
         );
     }
+    // endregion
 
+    // region ✅ Error
     if (isError) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -86,7 +109,9 @@ function UserBagPage() {
             </div>
         );
     }
+    // endregion
 
+    // region ✅ Empty Bag
     if (!cart?.items || cart.items.length === 0) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
@@ -100,8 +125,7 @@ function UserBagPage() {
             </div>
         );
     }
-
-    console.log(cart)
+    // endregion
 
     return (
         <div className="bg-gray-400 min-h-screen">
@@ -134,15 +158,18 @@ function UserBagPage() {
                                                 <div className="flex justify-between sm:grid sm:grid-cols-2">
                                                     <div className="pr-6">
                                                         <h3 className="text-sm">
-                                                            <a href="#" className="font-medium text-gray-700 hover:text-gray-800">
+                                                            <a href="#"
+                                                               className="font-medium text-gray-700 hover:text-gray-800">
                                                                 {product?.name || "Unknown Product"}
                                                             </a>
                                                         </h3>
                                                         {product?.isOnSale && (
-                                                            <p className="mt-1 text-sm text-red-600 font-semibold">ON SALE</p>
+                                                            <p className="mt-1 text-sm text-red-600 font-semibold">ON
+                                                                SALE</p>
                                                         )}
                                                         <p className="mt-1 text-sm text-gray-600">
-                                                            ${product?.price} × {item.quantity} = ${itemTotal.toFixed(2)}
+                                                            ${product?.price} × {item.quantity} =
+                                                            ${itemTotal.toFixed(2)}
                                                         </p>
                                                     </div>
 
@@ -151,7 +178,8 @@ function UserBagPage() {
                                                     </p>
                                                 </div>
 
-                                                <div className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">
+                                                <div
+                                                    className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">
                                                     <div className="inline-grid w-full max-w-16 grid-cols-1">
                                                         <select
                                                             name={`quantity-${productIdx}`}
@@ -170,25 +198,34 @@ function UserBagPage() {
                                                         />
                                                     </div>
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveItem(product._id)}
-                                                        className="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-500 sm:mt-3 sm:ml-0"
-                                                    >
-                                                        <span>Remove</span>
-                                                    </button>
+                                                    {/*region Remove Button*/}
+                                                    <div className="flex items-center justify-center  border-1 border-slate-200 p-2 rounded-md mt-2 cursor-pointer hover:bg-gray-600 hover:text-slate-300">
+                                                        <TrashIcon className="size-4 cursor-pointer"/>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveItem(product._id)}
+                                                            className="text-sm font-medium text-gray-700 cursor-pointer hover:text-slate-300"
+                                                        >
+                                                            <span>Remove</span>
+                                                        </button>
+                                                    </div>
+                                                    {/*endregion*/}
+
+
                                                 </div>
                                             </div>
 
                                             <p className="mt-4 flex space-x-2 text-sm text-gray-700">
                                                 {product?.inventory > 0 ? (
                                                     <>
-                                                        <CheckIcon aria-hidden="true" className="size-5 shrink-0 text-green-500" />
+                                                        <CheckIcon aria-hidden="true"
+                                                                   className="size-5 shrink-0 text-green-500"/>
                                                         <span>In stock ({product.inventory} available)</span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <ClockIcon aria-hidden="true" className="size-5 shrink-0 text-gray-300" />
+                                                        <ClockIcon aria-hidden="true"
+                                                                   className="size-5 shrink-0 text-gray-300"/>
                                                         <span>Out of stock</span>
                                                     </>
                                                 )}

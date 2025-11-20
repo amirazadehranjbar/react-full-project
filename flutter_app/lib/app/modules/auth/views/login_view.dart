@@ -5,6 +5,8 @@ import 'package:flutter_app/app/widgets/custom_text_field.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../controllers/auth_controller.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -14,11 +16,15 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
+  final _userNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+
+  final AuthController _authController = AuthController();
+
 
   @override
   void dispose() {
@@ -42,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   //region 3D Illustration
                   SizedBox(
-                    height: 200,
+                    height:25.h,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -81,26 +87,38 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ),
                         ),
+                        Positioned(
+                          top: 10.h,
+                          right: 20.w,
+                          child: Container(
+                            width: 90,
+                            height: 90,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  Colors.purpleAccent.withOpacity(0.4),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                         // Main icon
                         Center(
                           child: Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.purple.withOpacity(0.3),
+                                  color: Colors.purple.withOpacity(0.1),
                                   blurRadius: 30,
                                   spreadRadius: 5,
                                 ),
                               ],
                             ),
-                            child: Icon(
-                              Icons.lock_person_outlined,
-                              size: 60,
-                              color: Colors.blue.shade700,
-                            ),
+                            child: Image.asset("assets/images/login.png"),
                           ),
                         ),
                       ],
@@ -267,15 +285,11 @@ class _LoginViewState extends State<LoginView> {
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
                             // Handle login
-                            Get.snackbar(
-                              'Success',
-                              'Login successful!',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white,
+                            _authController.login(
+                                userName: _userNameController.text,
+                                email: _emailController.text,
+                                password: _passwordController.text,
                             );
-                            // Navigate to home
-                            // Get.offAllNamed('/home');
                           }
                         },
                         child: const Center(

@@ -48,13 +48,16 @@ class CustomTextField extends StatelessWidget {
           suffixIcon: suffixIcon,
 
           border: GradientOutlineInputBorder(
-            gradient: LinearGradient(colors: [Colors.red, Colors.blue]),
+            gradient: LinearGradient(colors: [Colors.purple.shade600, Colors.pink.shade400] ,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
             width: 1,
             borderRadius: BorderRadius.circular(15),
           ),
 
           focusedBorder: GradientOutlineInputBorder(
-            gradient: LinearGradient(colors: [Colors.yellow, Colors.green]),
+            gradient: LinearGradient(colors: [Colors.pink.shade400 ,Colors.purple.shade600]),
             width: 2,
             borderRadius: BorderRadius.circular(15),
           ),

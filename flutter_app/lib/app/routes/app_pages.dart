@@ -28,11 +28,11 @@ class AppPages {
     ),
     //
     //
-    // GetPage(
-    //   name: Routes.HOME,
-    //   page: () => HomeView(),
-    //   binding: HomeBinding(),
-    // ),
+    GetPage(
+      name: Routes.HOME,
+      page: () => HomeView(),
+      //binding: HomeBinding(),
+    ),
     //
     //
     // GetPage(

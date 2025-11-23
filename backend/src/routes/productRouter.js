@@ -3,7 +3,8 @@ const express = require("express");
 const { ProductModel } = require("../models/productModel");
 const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
 const CategoryModel = require("../models/categoryModel");
-const { upload, cloudinary } = require("../config/cloudinary");
+// const { upload, cloudinary } = require("../config/cloudinary");
+const inventoryModel = require("../models/inventoryModel");
 const productRouter = express.Router();
 
 //region ✅ Admin only - Add product with images
@@ -11,20 +12,23 @@ productRouter.post(
     "/api/admin/product",
     authenticate,
     authorizeRole('admin'),
-    upload.array('images', 5), // Accept up to 5 images
+    // upload.array('images', 1), // Accept up to 5 images
     async (req, res) => {
         try {
-            const { name, price, inventory, targetInventory, categoryID, isOnSale } = req.body;
+            const { name, price, images ,inventory, targetInventory, categoryID, isOnSale } = req.body;
 
-            // Get uploaded image URLs from Cloudinary
-            const imageUrls = req.files ? req.files.map(file => file.path) : [];
+            // // Get uploaded image URLs from Cloudinary
+            // const imageUrls = req.files ? req.files.map(file => file.path) : [];
 
-            if (imageUrls.length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: "At least one image is required"
-                });
-            }
+            // console.log(imageUrls.length);
+            //
+            // if (imageUrls.length === 0) {
+            //     return res.status(400).json({
+            //         success: false,
+            //         message: "At least one image is required"
+            //     });
+            // }
+
 
             const newProduct = new ProductModel({
                 name,
@@ -32,7 +36,7 @@ productRouter.post(
                 inventory: Number(inventory),
                 targetInventory: Number(targetInventory),
                 categoryID,
-                images: imageUrls,
+                images,
                 isOnSale: isOnSale === 'true'
             });
 
@@ -60,7 +64,7 @@ productRouter.put(
     "/api/admin/product/:id",
     authenticate,
     authorizeRole('admin'),
-    upload.array('images', 5),
+    // upload.array('images', 5),
     async (req, res) => {
         try {
             const { id } = req.params;

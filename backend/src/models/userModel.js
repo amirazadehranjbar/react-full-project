@@ -1,7 +1,10 @@
 // backend/src/models/userModel.js
 const mongoose = require('mongoose');
 const {ProductModel} = require("./productModel");
+const InventoryModel = require("./inventoryModel");
 
+
+//region ✅ user schema
 const userSchema = new mongoose.Schema({
     userName: {
         type: String,
@@ -43,6 +46,26 @@ const userSchema = new mongoose.Schema({
                     type: Number,
                     default: 1,
                     min: 1
+                },
+                price: {
+                    type: Number,
+                    default: 0
+                },
+                images:{
+                    type:[String],
+
+                },
+                productName:{
+                    type: String,
+                },
+
+                productInventory:{
+                    type:Number,
+                },
+
+                isOnSale:{
+                    type:Boolean,
+                    default: false
                 }
             }
         ]
@@ -56,38 +79,83 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true // Adds createdAt and updatedAt
 });
+//endregion
 
-// ✅ addToCart method
-userSchema.methods.addToCart = function (productID, quantity = 1) {
-    // Find if product already exists in cart
-    const cartItemIndex = this.cart.items.findIndex(
+//region✅ addToCart method
+userSchema.methods.addToCart = async function (productID, quantity = 1) {
+
+    // 1. Make sure the product exists
+    const productIndex = this.cart.items.findIndex(
         item => item.productID.toString() === productID.toString()
     );
 
-    if (cartItemIndex >= 0) {
-        // Product exists, update quantity
-        this.cart.items[cartItemIndex].quantity += quantity;
-    } else {
-        // Product doesn't exist, add new item
-        this.cart.items.push({
-            productID: productID,
-            quantity: quantity
-        });
+    const product = await ProductModel.findById(productID);
+
+    if (!product) throw new Error('Product not found');
+
+    // 2. Atomically decrease inventory only if enough stock is left
+    const updatedInventory = await InventoryModel.findOneAndUpdate(
+        {
+            productID: productID,          // <-- correct query
+            inventory: {$gte: quantity} // <-- stock-check
+        },
+        {$inc: {inventory: -quantity}}, // <-- atomic decrement
+        {new: true}                       // <-- return updated doc
+    );
+
+
+
+    if (!updatedInventory) {
+        throw new Error('Not enough inventory available');
     }
 
+    const price = product.price;
+    const images = product.images;
+    const productName = product.name;
+    const productInventory = updatedInventory.inventory;
+    const isOnSale = product.isOnSale;
+
+    if (productIndex >= 0) {
+
+        this.cart.items[productIndex].quantity += quantity;
+        this.cart.items[productIndex].productInventory = updatedInventory.inventory;
+
+
+
+    }else {
+
+        this.cart.items.push({
+            productID,
+            quantity,
+            price,
+            images,
+            productName,
+            productInventory,
+            isOnSale
+        })
+    }
+
+    // 4. Persist user document
     return this.save();
 };
+//endregion
 
-// ✅ Method to remove from cart
+//region ✅ Method to remove from cart
 userSchema.methods.removeFromCart = function (productID) {
     this.cart.items = this.cart.items.filter(
         item => item.productID.toString() !== productID.toString()
     );
     return this.save();
 };
+//endregion
 
-// ✅ Method to update quantity
+
+
+
+//region ✅ Method to update quantity
 userSchema.methods.updateCartItemQuantity = function (productID, quantity) {
+
+
     const cartItemIndex = this.cart.items.findIndex(
         item => item.productID.toString() === productID.toString()
     );
@@ -103,12 +171,14 @@ userSchema.methods.updateCartItemQuantity = function (productID, quantity) {
 
     return this.save();
 };
+// endregion
 
-// ✅ Method to clear cart
+//region ✅ Method to clear cart
 userSchema.methods.clearCart = function () {
     this.cart.items = [];
     return this.save();
 };
+//endregion
 
 
 module.exports = mongoose.model('User', userSchema);

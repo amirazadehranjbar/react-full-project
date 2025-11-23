@@ -1,6 +1,7 @@
 // backend/src/models/productModel.js
 const mongoose = require('mongoose');
 const {model} = require("mongoose");
+const InventoryModel = require("./inventoryModel");
 
 const productSchema = new mongoose.Schema({
 
@@ -16,14 +17,12 @@ const productSchema = new mongoose.Schema({
 
     inventory: {
         type: Number,
-        required: true,
-        min: 0,
+        default: 1,
     },
 
     targetInventory: {
         type: Number,
-        required: true,
-        min: 0,
+        default: 50,
     },
 
     categoryID: {
@@ -41,6 +40,32 @@ const productSchema = new mongoose.Schema({
     }
 
 });
+
+
+//region✅ add inventory for new product method
+productSchema.pre("save", async function (next) {
+
+    try {
+        const productID = this._id;
+        const inventory = this.inventory;
+        const  targetInventory = this.targetInventory;
+
+        const newInventoryForNewProduct = await new InventoryModel({
+            productID,
+            inventory,
+            targetInventory
+        });
+
+        await newInventoryForNewProduct.save();
+
+        // next();
+
+    } catch (e) {
+        console.log(e);
+    }
+
+});
+//endregion
 
 const ProductModel = model("Products", productSchema);
 module.exports.ProductModel = ProductModel;

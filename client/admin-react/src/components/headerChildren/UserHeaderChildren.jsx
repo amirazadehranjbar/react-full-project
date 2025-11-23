@@ -3,8 +3,8 @@ import {Dialog, DialogPanel} from '@headlessui/react';
 import {Bars3Icon, XMarkIcon, BellAlertIcon, ShoppingBagIcon} from '@heroicons/react/24/outline';
 import DropdownWithIcon from "../dropdownMenu/DropdownWithIcon.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {getCart} from "../../redux/features/auth/authUserSlice.js";
 import {useNavigate} from "react-router-dom";
+import {userProfile} from "../../redux/features/auth/authUserSlice.js";
 
 const navigation = [
     {name: 'Home', href: '/api/user'},
@@ -14,15 +14,20 @@ const navigation = [
 
 
 function UserHeaderChildren() {
+
+
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const {data, cart} = useSelector(state => state.authUserReducer);
+
+
+
+    const {data} = useSelector(state => state.authUserReducer);
 
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        dispatch(getCart())
+        dispatch(userProfile())
     }, [dispatch]);
 
     return (
@@ -71,7 +76,7 @@ function UserHeaderChildren() {
                                 navigate("/api/user/cart")
                             }}/>
                             <span
-                                className="absolute -top-1 -right-1 flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-semibold text-white bg-red-600 rounded-full animate-pulse">{cart.items.length || 0}</span>
+                                className="absolute -top-1 -right-1 flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-semibold text-white bg-red-600 rounded-full animate-pulse">{data.cart.items.length || 0}</span>
                         </div>
                         <BellAlertIcon className="text-sky-700 size-6 mr-2"/>
                         <img src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}

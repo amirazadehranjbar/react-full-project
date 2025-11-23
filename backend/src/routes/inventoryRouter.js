@@ -1,26 +1,24 @@
 const express = require("express");
-const {ProductModel} = require("../models/productModel");
-const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
+const {authenticate} = require("../middleware/authMiddleware");
+const InventoryModel = require("../models/inventoryModel");
 const inventoryRouter = express.Router();
 
-//region ✅ Admin only - Get inventory data
+//region ✅ Get inventory data
 inventoryRouter.get(
-    "/api/admin/inventory",
+    "/api/users/inventory",
     authenticate,
-    authorizeRole('admin'),
     async (req, res) => {
         try {
-            const products = await ProductModel.find({})
-                .select("name inventory targetInventory categoryID");
+            const data = await InventoryModel.find({});
 
-            if (!products || products.length === 0) {
+            if (!data || data.length === 0) {
                 return res.status(404).json({
                     success: false,
-                    message: "No products found"
+                    message: "No inventory found"
                 });
             }
 
-            return res.status(200).json(products);
+            return res.status(200).json({success: true, data: data});
 
         } catch (e) {
             return res.status(500).json({
@@ -31,5 +29,27 @@ inventoryRouter.get(
     }
 );
 // endregion
+
+//✅ Update product inventory
+inventoryRouter.post("/api/inventory/update", async (req, res) => {
+
+    try {
+        const {productID, amount} = req.body;
+
+        await InventoryModel.findOneAndUpdate({productID: productID},
+        { $inc: { "inventory": amount }},
+            {new:true}
+        );
+
+        const newInventoryData = await InventoryModel.find({});
+
+        return res.status(200).json({success: true, message:"product inventory updated successfully" ,data: newInventoryData});
+
+    } catch (e) {
+        return res.status(500).json({success: false, message: e.message || "Server Error"});
+    }
+
+});
+//endregion
 
 module.exports = inventoryRouter;

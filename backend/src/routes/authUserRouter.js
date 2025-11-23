@@ -4,10 +4,8 @@ const router = express.Router();
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const validateRequest = require('../middleware/validateRequest');
-const {loginUserSchema} = require('../validators/userValidator');
 const passport = require('passport');
-const {authenticate, requirePassword, ensureUserAuthenticated} = require("../middleware/authMiddleware");
+const {ensureUserAuthenticated} = require("../middleware/authMiddleware");
 const {ProductModel} = require("../models/productModel");
 
 //region ✅ REGISTER
@@ -92,14 +90,10 @@ router.post("/api/users/login", (req, res, next) => {
 //region ✅ user data - ME
 router.get("/api/users/me", ensureUserAuthenticated, async (req, res) => {
     try {
+
         return res.json({
             success: true,
-            data: {
-                userID: req.user._id,
-                username: req.user.userName,
-                email: req.user.email,
-                profileImg: req.user.profileImg
-            }
+            data: req.user
         });
     } catch (e) {
         return res.status(400).json({success: false, message: "Something went wrong"});
@@ -202,7 +196,7 @@ router.get("/api/users/logout", ensureUserAuthenticated, async (req, res) => {
 //region ✅ add to user's cart
 router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) => {
     try {
-        const { productID, quantity } = req.body;
+        const {productID, quantity} = req.body;
 
         // ✅ Validate productID
         if (!productID) {
@@ -225,8 +219,8 @@ router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) 
         const user = await User.findById(req.user._id);
         await user.addToCart(productID, quantity || 1);
 
-        // ✅ Populate cart items with product details
-        await user.populate('cart.items.productID');
+        // // ✅ Populate cart items with product details
+        // await user.populate('cart.items.productID');
 
         return res.status(200).json({
             success: true,
@@ -247,11 +241,11 @@ router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) 
 //region ✅ get user's cart
 router.get("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).populate('cart.items.productID');
+        const user = await User.findById(req.user._id);
 
         return res.status(200).json({
             success: true,
-            cart: user.cart
+            data: user.cart.items,
         });
 
     } catch (e) {
@@ -267,7 +261,7 @@ router.get("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
 //region ✅ remove from cart
 router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
     try {
-        const { productID } = req.params;
+        const {productID} = req.params;
 
         const user = await User.findById(req.user._id);
         await user.removeFromCart(productID);
@@ -292,8 +286,8 @@ router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req,
 //region ✅ update cart item quantity
 router.put("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
     try {
-        const { productID } = req.params;
-        const { quantity } = req.body;
+        const {productID} = req.params;
+        const {quantity} = req.body;
 
         if (!quantity || quantity < 0) {
             return res.status(400).json({

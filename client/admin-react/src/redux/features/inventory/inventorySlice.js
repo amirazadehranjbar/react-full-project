@@ -3,11 +3,12 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
+//region✅ get inventory data
 export const getInventory = createAsyncThunk(
     "getInventory",
     async (arg, thunkAPI) => {
         try {
-            const res = await axios.get("http://localhost:3500/api/admin/inventory", {
+            const res = await axios.get("http://localhost:3500/api/users/inventory", {
                 withCredentials: true  // ✅ Send cookies with request
             });
             return res.data;
@@ -26,49 +27,103 @@ export const getInventory = createAsyncThunk(
         }
     }
 );
+//endregion
+
+//region✅ update product inventory
+export const updateProductInventory = createAsyncThunk(
+    "updateProductInventory",
+
+    async ({productID , amount}, thunkAPI) =>{
+
+        try {
+
+            const res = await axios.post(
+                "http://localhost:3500/api/inventory/update",
+                {productID , amount},
+                {withCredentials:true}
+            );
+
+            return res.data;
+
+        }catch (error) {
+
+            return thunkAPI.rejectWithValue(error.message || "failed to update product inventory");
+        }
+
+    }
+)
+//endregion
 
 const initialState = {
     isLoading: false,
     isError: false,
-    error: null,
-    data: [],
-    filteredData:[],
+    success:false,
+    message: "",
+    inventory: [],
+    filteredInventoryData: [],
 };
 
 const inventorySlice = createSlice({
+
     name: "inventory",
+
     initialState,
-    reducers:{
-        filterProductByID:(state, action)=>{
+
+    reducers: {
+        filterProductByID: (state, action) => {
             const categoryID = action.payload;
 
             if (!categoryID) {
-                state.filteredData = state.data;
+                state.filteredInventoryData = state.data;
                 return;
             }
 
-            state.filteredData = state.data.filter(product => {
+            state.filteredInventoryData = state.data.filter(product => {
                 return product.categoryID === categoryID;
             });
         }
     },
+
+
     extraReducers: (builder) => builder
-        .addCase(getInventory.pending, state => {
+
+        //region ✅ get inventory data
+        .addCase(getInventory.pending, (state , action) => {
             state.isLoading = true;
             state.isError = false;
-            state.error = null;
         })
         .addCase(getInventory.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.error = null;
-            state.data = action.payload;
+            state.message = action.payload.message || "";
+            console.log(`action.payload.data = ${JSON.stringify(action.payload.data)}`)
+            state.inventory = action.payload.data;
         })
         .addCase(getInventory.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
-            state.error = action.payload?.message || action.payload;
+            state.message = action.payload.message || "error";
         })
+        //endregion
+
+        //region✅ update product inventory
+        .addCase(updateProductInventory.pending , (state)=>{
+            state.isLoading=true;
+            state.isError=false;
+        })
+
+        .addCase(updateProductInventory.fulfilled , (state , action)=>{
+            state.isLoading=true;
+            state.isError=false;
+            state.inventory = action.payload.data;
+        })
+
+        .addCase(updateProductInventory.rejected , (state , action)=>{
+            state.isLoading=false;
+            state.isError=true;
+            state.message = action.payload.message || "error";
+        })
+        //endregion
 });
 
 export const {filterProductByID} = inventorySlice.actions;

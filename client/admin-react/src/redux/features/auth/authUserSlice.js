@@ -138,25 +138,6 @@ export const addToCart = createAsyncThunk(
 );
 //endregion
 
-//region ✅ get cart
-export const getCart = createAsyncThunk(
-    "auth/getCart",
-    async (_, thunkAPI) => {
-        try {
-            const res = await axios.get(
-                "http://localhost:3500/api/users/cart",
-                {withCredentials: true}
-            );
-
-            return res.data;
-
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to get cart");
-        }
-    }
-);
-//endregion
-
 //region ✅ remove from cart
 export const removeFromCart = createAsyncThunk(
     "auth/removeFromCart",
@@ -176,25 +157,6 @@ export const removeFromCart = createAsyncThunk(
 );
 //endregion
 
-//region ✅ update cart quantity
-export const updateCartQuantity = createAsyncThunk(
-    "auth/updateCartQuantity",
-    async ({productID, quantity}, thunkAPI) => {
-        try {
-            const res = await axios.put(
-                `http://localhost:3500/api/users/cart/${productID}`,
-                {quantity},
-                {withCredentials: true}
-            );
-
-            return res.data;
-
-        } catch (e) {
-            return thunkAPI.rejectWithValue(e.response?.data || e.message || "Failed to update cart");
-        }
-    }
-);
-//endregion
 
 const initialState = {
     userName: "",
@@ -209,7 +171,7 @@ const initialState = {
     data: [],
     cart: {
         items: []
-    }
+    },
 }
 
 const AuthUserSlice = createSlice({
@@ -252,7 +214,7 @@ const AuthUserSlice = createSlice({
             state.success = false;
             state.isAuthenticated = false;
         })
-        // endregion
+        //endregion
 
         //region ✅ ADMIN LOGIN
         .addCase(adminLogin.pending, (state) => {
@@ -393,25 +355,6 @@ const AuthUserSlice = createSlice({
         })
         //endregion
 
-        //region ✅ get cart
-        .addCase(getCart.pending, state => {
-            state.isLoading = true;
-            state.isError = false;
-        })
-
-        .addCase(getCart.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.isError = false;
-            state.cart = action.payload.cart;
-        })
-
-        .addCase(getCart.rejected, (state, action) => {
-            state.isLoading = false;
-            state.isError = true;
-            state.message = action.payload?.message || "Failed to get cart";
-        })
-        //endregion
-
         //region ✅ remove from cart
         .addCase(removeFromCart.fulfilled, (state, action) => {
             state.cart = action.payload.cart;
@@ -419,12 +362,6 @@ const AuthUserSlice = createSlice({
         })
         //endregion
 
-        //region ✅ update cart quantity
-        .addCase(updateCartQuantity.fulfilled, (state, action) => {
-            state.cart = action.payload.cart;
-            state.message = action.payload.message;
-        })
-//endregion
 });
 
 export const {clearAuth} = AuthUserSlice.actions;

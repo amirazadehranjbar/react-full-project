@@ -16,8 +16,7 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
-  final _userNameController = TextEditingController();
-  final _emailController = TextEditingController();
+    final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
@@ -286,7 +285,6 @@ class _LoginViewState extends State<LoginView> {
                           if (_formKey.currentState!.validate()) {
                             // Handle login
                             _authController.login(
-                                userName: _userNameController.text,
                                 email: _emailController.text,
                                 password: _passwordController.text,
                             );

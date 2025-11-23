@@ -1,22 +1,50 @@
+// client/admin-react/src/pages/user/userBag/UserBagPage.jsx
+//region✅ imports
 import {useDispatch, useSelector} from "react-redux";
 import {ChevronDownIcon} from '@heroicons/react/16/solid'
-import {CheckIcon, ClockIcon , TrashIcon} from '@heroicons/react/20/solid'
-import {useEffect, useMemo} from "react";
-import {getCart, updateCartQuantity, removeFromCart} from "../../../redux/features/auth/authUserSlice.js";
+import {CheckIcon, ClockIcon, TrashIcon} from '@heroicons/react/20/solid'
+import {useEffect, useMemo, useState} from "react";
+import {removeFromCart, userProfile} from "../../../redux/features/auth/authUserSlice.js";
 import Swal from "sweetalert2";
+import {getInventory, updateProductInventory} from "../../../redux/features/inventory/inventorySlice.js";
+
+//endregion
 
 function UserBagPage() {
 
-    const {isLoading, isError, cart} = useSelector(state => state.authUserReducer);
+    const {isLoading, isError, data} = useSelector(state => state.authUserReducer);
+
+    const {inventory} = useSelector(state => state.inventoryReducer);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getCart());
+        dispatch(userProfile());
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getInventory());
+    }, [dispatch]);
+
+
+    const [productInventoryByID , setProductInventoryByID] = useState(0);
+
+    const getInventoryProductByProductID = async (productID)=>{
+
+        const inventoryByID = inventory.filter(inv =>{
+            return inv.productID!== productID
+        });
+
+        setProductInventoryByID(inventoryByID);
+
+
+    }
+
+
 
     //region ✅ Calculate totals using useMemo for performance
     const cartTotals = useMemo(() => {
-        if (!cart?.items || cart.items.length === 0) {
+        if (!data?.cart.items || data.cart.items.length === 0) {
             return {
                 subtotal: 0,
                 shipping: 0,
@@ -26,8 +54,8 @@ function UserBagPage() {
         }
 
         // Calculate subtotal
-        const subtotal = cart.items.reduce((sum, item) => {
-            const price = Number(item.productID?.price) || 0;
+        const subtotal = data.cart.items.reduce((sum, item) => {
+            const price = Number(item.price) || 0;
             const quantity = Number(item.quantity) || 0;
             return sum + (price * quantity);
         }, 0);
@@ -47,17 +75,22 @@ function UserBagPage() {
             tax: tax.toFixed(2),
             total: total.toFixed(2)
         };
-    }, [cart?.items]);
+    }, [data.cart?.items]);
     // endregion
 
     //region ✅ Handle quantity change
-    const handleQuantityChange = async (productID, newQuantity) => {
+    const handleQuantityChange = async (productID, amount) => {
+
         try {
-            await dispatch(updateCartQuantity({
+
+            await dispatch(updateProductInventory({
                 productID,
-                quantity: parseInt(newQuantity)
-            })).unwrap();
+                quantity: parseInt(amount)
+            }));
+
+
         } catch (error) {
+
             console.error("Failed to update quantity:", error);
             alert("Failed to update quantity");
         }
@@ -112,7 +145,7 @@ function UserBagPage() {
     // endregion
 
     // region ✅ Empty Bag
-    if (!cart?.items || cart.items.length === 0) {
+    if (!data.cart?.items || data.cart.items.length === 0) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
                 <div className="text-2xl font-semibold text-gray-700 mb-4">Your bag is empty</div>
@@ -127,6 +160,7 @@ function UserBagPage() {
     }
     // endregion
 
+    //region✅ insert user cart data
     return (
         <div className="bg-gray-400 min-h-screen">
             <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
@@ -137,38 +171,44 @@ function UserBagPage() {
                         <h2 className="sr-only">Items in your shopping cart</h2>
 
                         <ul role="list" className="divide-y divide-gray-200 border-t border-b border-gray-200">
-                            {cart.items.map((item, productIdx) => {
-                                const product = item.productID;
-                                const itemTotal = (Number(product?.price) || 0) * (Number(item.quantity) || 0);
+                            {data.cart.items.map((item, productIdx) => {
+
+                                const itemTotal = (Number(item?.price) || 0) * (Number(item.quantity) || 0);
+
+                                const itemInventory = getInventoryProductByProductID(item._id);
 
                                 return (
                                     <li key={item._id || productIdx} className="flex py-6 sm:py-10">
+
+                                        {/*region✅ product images*/}
                                         <div className="shrink-0">
                                             <img
-                                                alt={product?.name || "Product"}
-                                                src={Array.isArray(product?.images) && product.images.length > 0
-                                                    ? product.images[0]
+                                                alt={item?.name || "Product"}
+                                                src={Array.isArray(item?.images) && item.images.length > 0
+                                                    ? item.images[0]
                                                     : '/placeholder.png'}
                                                 className="size-24 rounded-lg object-cover sm:size-32"
                                             />
                                         </div>
+                                        {/*endregion*/}
 
                                         <div className="relative ml-4 flex flex-1 flex-col justify-between sm:ml-6">
                                             <div>
+                                                {/*region✅ product name & price & OnSale*/}
                                                 <div className="flex justify-between sm:grid sm:grid-cols-2">
                                                     <div className="pr-6">
                                                         <h3 className="text-sm">
                                                             <a href="#"
                                                                className="font-medium text-gray-700 hover:text-gray-800">
-                                                                {product?.name || "Unknown Product"}
+                                                                {item?.name || "Unknown Product"}
                                                             </a>
                                                         </h3>
-                                                        {product?.isOnSale && (
+                                                        {item?.isOnSale && (
                                                             <p className="mt-1 text-sm text-red-600 font-semibold">ON
                                                                 SALE</p>
                                                         )}
                                                         <p className="mt-1 text-sm text-gray-600">
-                                                            ${product?.price} × {item.quantity} =
+                                                            ${item?.price} × {item.quantity} =
                                                             ${itemTotal.toFixed(2)}
                                                         </p>
                                                     </div>
@@ -177,15 +217,17 @@ function UserBagPage() {
                                                         ${itemTotal.toFixed(2)}
                                                     </p>
                                                 </div>
+                                                {/*endregion*/}
 
+                                                {/*region✅ product quantity selector & remove button*/}
                                                 <div
                                                     className="mt-4 flex items-center sm:absolute sm:top-0 sm:left-1/2 sm:mt-0 sm:block">
                                                     <div className="inline-grid w-full max-w-16 grid-cols-1">
                                                         <select
                                                             name={`quantity-${productIdx}`}
-                                                            aria-label={`Quantity, ${product?.name}`}
+                                                            aria-label={`Quantity, ${item?.name}`}
                                                             value={item.quantity}
-                                                            onChange={(e) => handleQuantityChange(product._id, e.target.value)}
+                                                            onChange={(e) => handleQuantityChange(item._id, e.target.value)}
                                                             className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                                         >
                                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
@@ -198,29 +240,30 @@ function UserBagPage() {
                                                         />
                                                     </div>
 
-                                                    {/*region Remove Button*/}
-                                                    <div className="flex items-center justify-center  border-1 border-slate-200 p-2 rounded-md mt-2 cursor-pointer hover:bg-gray-600 hover:text-slate-300">
+                                                    <div
+                                                        className="flex items-center justify-center  border-1 border-slate-200 p-2 rounded-md mt-2 cursor-pointer hover:bg-gray-600 hover:text-slate-300">
                                                         <TrashIcon className="size-4 cursor-pointer"/>
                                                         <button
                                                             type="button"
-                                                            onClick={() => handleRemoveItem(product._id)}
+                                                            onClick={() => handleRemoveItem(item._id)}
                                                             className="text-sm font-medium text-gray-700 cursor-pointer hover:text-slate-300"
                                                         >
                                                             <span>Remove</span>
                                                         </button>
                                                     </div>
-                                                    {/*endregion*/}
-
-
                                                 </div>
+                                                {/*endregion*/}
+
+
                                             </div>
 
+                                            {/*region✅ show product inventory*/}
                                             <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                                                {product?.inventory > 0 ? (
+                                                {itemInventory > 0 ? (
                                                     <>
                                                         <CheckIcon aria-hidden="true"
                                                                    className="size-5 shrink-0 text-green-500"/>
-                                                        <span>In stock ({product.inventory} available)</span>
+                                                        <span>In stock ({itemInventory || "?"} available)</span>
                                                     </>
                                                 ) : (
                                                     <>
@@ -230,6 +273,9 @@ function UserBagPage() {
                                                     </>
                                                 )}
                                             </p>
+                                            {/*endregion*/}
+
+
                                         </div>
                                     </li>
                                 );
@@ -277,7 +323,7 @@ function UserBagPage() {
 
                             {/* Item count */}
                             <div className="mt-4 text-center text-sm text-gray-500">
-                                Total items: {cart.items.reduce((sum, item) => sum + item.quantity, 0)}
+                                Total items: {data.cart.items.reduce((sum, item) => sum + item.quantity, 0)}
                             </div>
                         </div>
 
@@ -305,6 +351,7 @@ function UserBagPage() {
             </div>
         </div>
     );
+    //endregion
 }
 
 export default UserBagPage

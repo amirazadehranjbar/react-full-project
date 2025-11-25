@@ -2,7 +2,7 @@
 import { useRef } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useSpring, animated } from '@react-spring/three';
+// import { useSpring, animated } from '@react-spring/three';
 
 /**
  * Model3D Component
@@ -21,7 +21,7 @@ function Model3D({ modelPath, scale = 1, autoRotate = true }) {
     // Auto-rotation animation
     useFrame((state, delta) => {
         if (autoRotate && meshRef.current) {
-            meshRef.current.rotation.y += delta * 0.5; // Rotate speed
+            meshRef.current.rotation.y += delta * 0.2; // Rotate speed
         }
     });
 

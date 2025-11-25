@@ -22,16 +22,26 @@ function UserMainPage() {
 
     return (
         <div className="bg-gray-400 py-24 md:py-32">
+
+
             <div className="mx-auto grid max-w-8xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-5">
+
+
                 <div className="max-w-12xl xl:col-span-2 bg-gray-200 p-2 rounded-md shadow-md shadow-gray-500">
+
+
                     <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
                         Our Categories
                     </h2>
+
                     <p className="mt-6 text-lg/8 text-gray-600">
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt
                         ut labore et dolore magna aliquyam erat, sed diam vo
                     </p>
+
                 </div>
+
+
                 <ul role="list"
                     className="divide-y divide-gray-200 xl:col-span-3 space-y-10 lg:w-1/2 sm:w-full bg-gray-100 rounded-md">
                     {categories.map((category) => (

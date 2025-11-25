@@ -160,6 +160,30 @@ export const removeFromCart = createAsyncThunk(
 );
 //endregion
 
+//region✅ update cart data
+export const updateCartItem = createAsyncThunk(
+    "updateCartItem",
+    async ({productID, amount}, thunkAPI) => {
+
+
+        try {
+            const res = await axios.put(
+                "http://localhost:3500/api/users/cart/update-quantity",
+                {productID, amount},
+                {withCredentials: true},
+            );
+
+            return res.data;
+
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.message || e || "failed to update cart item data")
+        }
+
+
+    }
+);
+//endregion
+
 
 const initialState = {
     message: null,
@@ -183,7 +207,8 @@ const AuthUserSlice = createSlice({
 
     extraReducers: (builder) => builder
 
-        //region ✅ USER LOGIN
+
+        //region✅ USER LOGIN
         .addCase(userLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -349,14 +374,31 @@ const AuthUserSlice = createSlice({
         })
         //endregion
 
-        //region ✅ remove from cart
-        .addCase(removeFromCart.fulfilled, (state, action) => {
-            if (state.data) {
-                state.data.cart = action.payload.cart;
-            }
-            state.message = action.payload.message;
+        //region✅ update cart item
+        .addCase(updateCartItem.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
+        })
+
+        .addCase(updateCartItem.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.isError = false;
+            state.data.cart = action.payload.cart;
+        })
+
+        .addCase(updateCartItem.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload.message || "error";
         })
         //endregion
+
+        //region ✅ remove from cart
+        .addCase(removeFromCart.fulfilled, (state, action) => {
+            state.data.cart = action.payload.cart;
+            state.message = action.payload.message;
+        })
+    //endregion
 
 });
 

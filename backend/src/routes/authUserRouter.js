@@ -281,7 +281,7 @@ router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req,
 
         const user = await User.findById(req.user._id);
         await user.removeFromCart(productID);
-        await user.populate('cart.items.productID');
+        //await user.populate('cart.items.productID');
 
         return res.status(200).json({
             success: true,
@@ -303,9 +303,9 @@ router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req,
 router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (req, res) => {
     try {
 
-        const {productID, quantity} = req.body;
+        const {productID, amount} = req.body;
 
-        if (!quantity || quantity < 0) {
+        if (!amount || amount < 0) {
             return res.status(400).json({
                 success: false,
                 message: "Valid quantity is required"
@@ -314,6 +314,7 @@ router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (re
 
         // ✅ Check product inventory
         const product = await ProductModel.findById(productID);
+
         if (!product) {
             return res.status(404).json({
                 success: false,
@@ -321,7 +322,7 @@ router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (re
             });
         }
 
-        if (product.inventory < quantity) {
+        if (product.inventory < amount) {
             return res.status(400).json({
                 success: false,
                 message: `Not enough inventory. Only ${product.inventory} available.`
@@ -335,16 +336,17 @@ router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (re
         );
 
         if (cartItemIndex >= 0) {
-            if (quantity <= 0) {
+            if (amount <= 0) {
                 user.cart.items.splice(cartItemIndex, 1);
             } else {
-                user.cart.items[cartItemIndex].quantity = quantity;
-                user.cart.items[cartItemIndex].productInventory = product.inventory;
-                user.cart.items[cartItemIndex].price = product.price;
+                user.cart.items[cartItemIndex].quantity = amount;
             }
         }
 
+
         await user.save();
+
+        console.log("🚀 ~  ~ user.cart: ", user.cart);
 
         return res.status(200).json({
             success: true,

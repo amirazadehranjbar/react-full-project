@@ -1,4 +1,5 @@
 // backend/src/routes/authUserRouter.js
+//region imports
 const express = require('express');
 const router = express.Router();
 const User = require('../models/userModel');
@@ -7,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const {ensureUserAuthenticated} = require("../middleware/authMiddleware");
 const {ProductModel} = require("../models/productModel");
+const InventoryModel = require("../models/inventoryModel");
+//endregion
 
 //region ✅ REGISTER
 router.post("/api/users/register", async (req, res) => {
@@ -79,7 +82,8 @@ router.post("/api/users/login", (req, res, next) => {
                     userID: user._id,
                     username: user.userName,
                     email: user.email,
-                    profileImg: user.profileImg
+                    profileImg: user.profileImg || "https://static.vecteezy.com/system/resources/previews/002/318/271/non_2x/user-profile-icon-free-vector.jpg",
+                    cart: user.cart
                 }
             });
         });
@@ -196,9 +200,9 @@ router.get("/api/users/logout", ensureUserAuthenticated, async (req, res) => {
 //region ✅ add to user's cart
 router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) => {
     try {
-        const {productID, quantity} = req.body;
+        const {productID, quantity = 1} = req.body;  // ← Default quantity to 1
 
-        // ✅ Validate productID
+        // Validate productID
         if (!productID) {
             return res.status(400).json({
                 success: false,
@@ -206,21 +210,18 @@ router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) 
             });
         }
 
-        // ✅ Check if product exists
-        const product = await ProductModel.findById(productID);
-        if (!product) {
+        // Get user
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "Product not found"
+                message: "User not found"
             });
         }
 
-        // ✅ Get user and add to cart
-        const user = await User.findById(req.user._id);
-        await user.addToCart(productID, quantity || 1);
+        await user.addToCart(productID, quantity);
 
-        // // ✅ Populate cart items with product details
-        // await user.populate('cart.items.productID');
 
         return res.status(200).json({
             success: true,
@@ -238,14 +239,28 @@ router.post("/api/users/add-to-cart", ensureUserAuthenticated, async (req, res) 
 });
 //endregion
 
-//region ✅ get user's cart
+//region ✅ get user's cart - FIXED
 router.get("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
 
+        // ✅ Refresh inventory for all items
+        for (let item of user.cart.items) {
+            const product = await ProductModel.findById(item.productID);
+            if (product) {
+                item.productInventory = product.inventory;
+                item.price = product.price;
+                item.productName = product.name;
+                item.images = product.images;
+                item.isOnSale = product.isOnSale;
+            }
+        }
+
+        await user.save();
+
         return res.status(200).json({
             success: true,
-            data: user.cart.items,
+            cart: user.cart // ← Return full cart object
         });
 
     } catch (e) {
@@ -257,6 +272,7 @@ router.get("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
     }
 });
 //endregion
+
 
 //region ✅ remove from cart
 router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
@@ -283,11 +299,11 @@ router.delete("/api/users/cart/:productID", ensureUserAuthenticated, async (req,
 });
 //endregion
 
-//region ✅ update cart item quantity
-router.put("/api/users/cart/:productID", ensureUserAuthenticated, async (req, res) => {
+//region ✅ update cart item quantity - FIXED
+router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (req, res) => {
     try {
-        const {productID} = req.params;
-        const {quantity} = req.body;
+
+        const {productID, quantity} = req.body;
 
         if (!quantity || quantity < 0) {
             return res.status(400).json({
@@ -296,9 +312,39 @@ router.put("/api/users/cart/:productID", ensureUserAuthenticated, async (req, re
             });
         }
 
+        // ✅ Check product inventory
+        const product = await ProductModel.findById(productID);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        if (product.inventory < quantity) {
+            return res.status(400).json({
+                success: false,
+                message: `Not enough inventory. Only ${product.inventory} available.`
+            });
+        }
+
         const user = await User.findById(req.user._id);
-        await user.updateCartItemQuantity(productID, quantity);
-        await user.populate('cart.items.productID');
+
+        const cartItemIndex = user.cart.items.findIndex(
+            item => item.productID.toString() === productID.toString()
+        );
+
+        if (cartItemIndex >= 0) {
+            if (quantity <= 0) {
+                user.cart.items.splice(cartItemIndex, 1);
+            } else {
+                user.cart.items[cartItemIndex].quantity = quantity;
+                user.cart.items[cartItemIndex].productInventory = product.inventory;
+                user.cart.items[cartItemIndex].price = product.price;
+            }
+        }
+
+        await user.save();
 
         return res.status(200).json({
             success: true,
@@ -315,6 +361,7 @@ router.put("/api/users/cart/:productID", ensureUserAuthenticated, async (req, re
     }
 });
 //endregion
+
 
 //region ✅ clear cart
 router.delete("/api/users/cart", ensureUserAuthenticated, async (req, res) => {

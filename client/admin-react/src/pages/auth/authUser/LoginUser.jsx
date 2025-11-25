@@ -11,7 +11,7 @@ function LoginUser() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {message, isLoading, isError,success} = useSelector(state => state.authUserReducer);
+    const {data , isAuthenticated , isLoading, isError} = useSelector(state => state.authUserReducer);
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // ✅ Fixed: Added parentheses
@@ -23,11 +23,11 @@ function LoginUser() {
     }
 
     useEffect(() => {
-        console.log(`success is : ${success}`)
-        if (success) {
+        console.log(`success is : ${isAuthenticated}`)
+        if (isAuthenticated) {
             navigate("/api/user")
         }
-    }, [navigate, success]);
+    }, [navigate, isAuthenticated]);
 
     return (
         <>

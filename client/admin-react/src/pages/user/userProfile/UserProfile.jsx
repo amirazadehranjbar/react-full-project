@@ -5,7 +5,7 @@ import Page from "./Page.jsx";
 
 function UserProfile() {
 
-    const {data, isError, isLoading, success, message} = useSelector(state => state.authUserReducer);
+    const {data, isError, isLoading} = useSelector(state => state.authUserReducer);
     const dispatch = useDispatch();
 
     useEffect(() => {

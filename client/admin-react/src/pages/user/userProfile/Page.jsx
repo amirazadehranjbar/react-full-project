@@ -41,7 +41,9 @@ function classNames(...classes) {
 
 function Page() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const {data} = useSelector(state => state.authUserReducer)
+    const {data} = useSelector(state => state.authUserReducer);
+
+    console.log(`user profile data = ${JSON.stringify(data)}`);
 
     return (
         <>
@@ -134,7 +136,7 @@ function Page() {
                                                     className="size-8 rounded-full bg-gray-800"
                                                 />
                                                 <span className="sr-only">Your profile</span>
-                                                <span aria-hidden="true">{data.username || ""}</span>
+                                                <span aria-hidden="true">{data.userName || ""}</span>
                                             </a>
                                         </li>
                                     </ul>

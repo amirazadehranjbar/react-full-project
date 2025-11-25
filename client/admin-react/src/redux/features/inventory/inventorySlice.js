@@ -33,19 +33,19 @@ export const getInventory = createAsyncThunk(
 export const updateProductInventory = createAsyncThunk(
     "updateProductInventory",
 
-    async ({productID , amount}, thunkAPI) =>{
+    async ({productID, amount}, thunkAPI) => {
 
         try {
 
             const res = await axios.post(
                 "http://localhost:3500/api/inventory/update",
-                {productID , amount},
-                {withCredentials:true}
+                {productID, amount},
+                {withCredentials: true}
             );
 
             return res.data;
 
-        }catch (error) {
+        } catch (error) {
 
             return thunkAPI.rejectWithValue(error.message || "failed to update product inventory");
         }
@@ -57,9 +57,9 @@ export const updateProductInventory = createAsyncThunk(
 const initialState = {
     isLoading: false,
     isError: false,
-    success:false,
+    success: false,
     message: "",
-    inventory: [],
+    inventoryData: [],
     filteredInventoryData: [],
 };
 
@@ -88,16 +88,15 @@ const inventorySlice = createSlice({
     extraReducers: (builder) => builder
 
         //region ✅ get inventory data
-        .addCase(getInventory.pending, (state , action) => {
+        .addCase(getInventory.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
         })
         .addCase(getInventory.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.message = action.payload.message || "";
-            console.log(`action.payload.data = ${JSON.stringify(action.payload.data)}`)
-            state.inventory = action.payload.data;
+            //console.log(`action.payload.data = ${JSON.stringify(action.payload.data)}`)
+            state.inventoryData = action.payload.data;
         })
         .addCase(getInventory.rejected, (state, action) => {
             state.isLoading = false;
@@ -107,23 +106,24 @@ const inventorySlice = createSlice({
         //endregion
 
         //region✅ update product inventory
-        .addCase(updateProductInventory.pending , (state)=>{
-            state.isLoading=true;
-            state.isError=false;
+        .addCase(updateProductInventory.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
         })
 
-        .addCase(updateProductInventory.fulfilled , (state , action)=>{
-            state.isLoading=true;
-            state.isError=false;
-            state.inventory = action.payload.data;
+        .addCase(updateProductInventory.fulfilled, (state, action) => {
+            state.isLoading = true;
+            state.isError = false;
+            state.inventoryData = action.payload.data;
+
         })
 
-        .addCase(updateProductInventory.rejected , (state , action)=>{
-            state.isLoading=false;
-            state.isError=true;
+        .addCase(updateProductInventory.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
             state.message = action.payload.message || "error";
         })
-        //endregion
+    //endregion
 });
 
 export const {filterProductByID} = inventorySlice.actions;

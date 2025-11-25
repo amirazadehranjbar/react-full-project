@@ -54,7 +54,7 @@ function ProductCard({ product }) {
     const handleAddToCart = async () => {
         setIsAdding(true);
         try {
-            await dispatch(addToCart({ productID: product._id, quantity: 1 })).unwrap();
+            await dispatch(addToCart({ productID: product._id, quantity: 1 }));
             alert("Product added to cart!"); // Or use a toast notification
         } catch (error) {
             alert("Failed to add to cart: " + (error.message || "Please try again"));

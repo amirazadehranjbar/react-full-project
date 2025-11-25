@@ -1,3 +1,4 @@
+// client/admin-react/src/components/headerChildren/UserHeaderChildren.jsx
 import {useEffect, useState} from 'react'
 import {Dialog, DialogPanel} from '@headlessui/react';
 import {Bars3Icon, XMarkIcon, BellAlertIcon, ShoppingBagIcon} from '@heroicons/react/24/outline';

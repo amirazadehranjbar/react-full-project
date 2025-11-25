@@ -1,3 +1,4 @@
+// backend/src/routes/inventoryRouter.js
 const express = require("express");
 const {authenticate} = require("../middleware/authMiddleware");
 const InventoryModel = require("../models/inventoryModel");
@@ -30,7 +31,7 @@ inventoryRouter.get(
 );
 // endregion
 
-//✅ Update product inventory
+//region✅ Update product inventory
 inventoryRouter.post("/api/inventory/update", async (req, res) => {
 
     try {

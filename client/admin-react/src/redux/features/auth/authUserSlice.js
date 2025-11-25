@@ -75,6 +75,8 @@ export const userProfile = createAsyncThunk(
                 withCredentials: true,
             });
 
+            //console.log(`result data from api = ${JSON.stringify(res.data)}`)
+
             return res.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response?.data || e.message || "Can't get profile data");
@@ -129,6 +131,7 @@ export const addToCart = createAsyncThunk(
                 {withCredentials: true}
             );
 
+            console.log(`quantity = ${quantity}`)
             return res.data;
 
         } catch (e) {
@@ -159,19 +162,12 @@ export const removeFromCart = createAsyncThunk(
 
 
 const initialState = {
-    userName: "",
-    email: "",
-    profileImg: "",
-    role: "user",
     message: null,
     isLoading: false,
     isError: false,
     success: false,
     isAuthenticated: false,
-    data: [],
-    cart: {
-        items: []
-    },
+    data: null,  // ← ALL user info here (cart, email, userName, etc.)
 }
 
 const AuthUserSlice = createSlice({
@@ -191,19 +187,12 @@ const AuthUserSlice = createSlice({
         .addCase(userLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
-            state.message = null;
-            state.success = false;
         })
 
         .addCase(userLogin.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.userName = action.payload.data.username;
-            state.email = action.payload.data.email;
-            state.profileImg = action.payload.data.profileImg || "";
-            state.role = action.payload.data.role || "user";
-            state.message = action.payload.message;
-            state.success = action.payload.success;
+            state.data = action.payload.data;
             state.isAuthenticated = true;
         })
 
@@ -344,7 +333,12 @@ const AuthUserSlice = createSlice({
         .addCase(addToCart.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isError = false;
-            state.cart = action.payload.cart;
+
+            // ✅ Update cart inside data object
+            if (state.data) {
+                state.data.cart = action.payload.cart;
+            }
+
             state.message = action.payload.message;
         })
 
@@ -357,7 +351,9 @@ const AuthUserSlice = createSlice({
 
         //region ✅ remove from cart
         .addCase(removeFromCart.fulfilled, (state, action) => {
-            state.cart = action.payload.cart;
+            if (state.data) {
+                state.data.cart = action.payload.cart;
+            }
             state.message = action.payload.message;
         })
         //endregion

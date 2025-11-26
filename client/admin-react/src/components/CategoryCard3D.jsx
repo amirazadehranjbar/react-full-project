@@ -6,59 +6,72 @@ import Model3D from './Model3D';
 
 /**
  * CategoryCard3D Component
- * Category card with 3D model icon
+ * Modern card-based design with 3D model and gradient background
  *
  * @param {Object} category - Category data
  * @param {Function} onClick - Click handler
  */
 function CategoryCard3D({ category, onClick }) {
     return (
-        <li
-            className="flex shadow-md shadow-gray-400 rounded-md flex-col gap-10 py-8 first:pt-0 last:pb-0 sm:flex-row cursor-pointer hover:shadow-xl transition-shadow"
-            onClick={onClick}
+        <div
+            className="relative w-full h-64 rounded-2xl overflow-hidden shadow-2xl group transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl"
+            style={{
+                background: 'radial-gradient(circle at center, rgba(180, 190, 200, 0.8) 0%, rgba(240, 243, 246, 0.3) 70%)'
+            }}
         >
-            {/* 3D Model Container */}
-            <div className="w-48 h-48 flex-none rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+            {/* 3D Model Container (Left Side) */}
+            <div className="absolute inset-0 w-2/3 h-full">
                 <Canvas
                     camera={{ position: [0, 0, 5], fov: 50 }}
                     style={{ width: '100%', height: '100%' }}
                 >
                     <Suspense fallback={null}>
                         {/* Lighting */}
-                        <ambientLight intensity={0.5} />
-                        <directionalLight position={[10, 10, 5]} intensity={1} />
-                        <pointLight position={[-10, -10, -5]} intensity={0.5} />
+                        <ambientLight intensity={0.8} />
+                        <directionalLight position={[10, 10, 5]} intensity={1.2} />
+                        <pointLight position={[-10, -10, -5]} intensity={0.7} />
 
                         {/* 3D Model */}
-                        <Stage environment="city" intensity={0.5}>
+                        <Stage environment="city" intensity={0.6}>
                             <Model3D
                                 modelPath={category.model3D}
-                                scale={1.5}
-                                autoRotate={true}
+                                scale={2}
+                                autoRotate={false}
                             />
                         </Stage>
 
-                        {/* Optional: Allow user to rotate */}
+                        {/* Optional: User interaction */}
                         <OrbitControls
                             enableZoom={false}
                             enablePan={false}
-                            minPolarAngle={Math.PI / 2.5}
-                            maxPolarAngle={Math.PI / 2.5}
+                            false
+                            autoRotateSpeed={2}
                         />
                     </Suspense>
                 </Canvas>
             </div>
 
-            {/* Category Info */}
-            <div className="max-w-xl flex-auto">
-                <h3 className="text-lg/8 font-semibold tracking-tight text-gray-900">
-                    {category.name}
-                </h3>
-                <p className="mt-2 text-sm text-gray-600">
-                    {category.description || 'Explore products'}
-                </p>
+            {/* Category Info Card (Right Side) */}
+            <div className="absolute right-0 top-0 bottom-0 w-1/3 flex flex-col justify-center items-center p-6 space-y-4">
+                {/* Category Name */}
+                <div className="w-full bg-slate-600/90 backdrop-blur-sm rounded-lg px-6 py-4 shadow-lg">
+                    <h3 className="text-xl font-bold text-white text-center">
+                        {category.name}
+                    </h3>
+                </div>
+
+                {/* Explore Button */}
+                <button
+                    onClick={onClick}
+                    className="w-full bg-white/80 backdrop-blur-sm hover:bg-white border-2 border-slate-300 rounded-lg px-6 py-3 text-slate-700 font-semibold transition-all duration-300 hover:scale-105 shadow-md cursor-pointer"
+                >
+                    Explore products
+                </button>
             </div>
-        </li>
+
+            {/* Hover Effect Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        </div>
     );
 }
 

@@ -1,21 +1,22 @@
 // frontend/src/pages/products/ProductsInCategory.jsx
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { getProductsByCategory } from "../../redux/features/product/productSlice.js";
-import { useLocation } from "react-router-dom";
-import { RingLoader } from "react-spinners";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect, useState} from "react";
+import {getProductsByCategory} from "../../redux/features/product/productSlice.js";
+import {useLocation} from "react-router-dom";
+import {RingLoader} from "react-spinners";
 import {addToCart} from "../../redux/features/auth/authUserSlice.js";
+import {useNavigate} from "react-router";
 
 function ProductsInCategory() {
     const location = useLocation();
     const categoryID = location.state.categoryID;
 
 
-    const { isLoading, isError, message, categoryName, data } = useSelector(state => state.productReducer);
+    const {isLoading, isError, message, categoryName, data} = useSelector(state => state.productReducer);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getProductsByCategory({ categoryID }));
+        dispatch(getProductsByCategory({categoryID}));
     }, [categoryID, dispatch]);
 
 
@@ -25,7 +26,7 @@ function ProductsInCategory() {
 
             {isLoading && (
                 <div className="flex justify-center items-center h-full py-20">
-                    <RingLoader color="#4F46E5" />
+                    <RingLoader color="#4F46E5"/>
                 </div>
             )}
 
@@ -35,7 +36,7 @@ function ProductsInCategory() {
 
                     <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
                         {data.map((product, index) => (
-                            <ProductCard key={product._id || index} product={product} />
+                             <ProductCard key={product._id || index} product={product}/>
                         ))}
                     </div>
                 </div>
@@ -45,16 +46,17 @@ function ProductsInCategory() {
 }
 
 //region ✅ Separate Product Card Component
-function ProductCard({ product }) {
+function ProductCard({product}) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isAdding, setIsAdding] = useState(false);
     const images = product.images || [];
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleAddToCart = async () => {
         setIsAdding(true);
         try {
-            await dispatch(addToCart({ productID: product._id, quantity: 1 }));
+            await dispatch(addToCart({productID: product._id, quantity: 1}));
             alert("Product added to cart!"); // Or use a toast notification
         } catch (error) {
             alert("Failed to add to cart: " + (error.message || "Please try again"));
@@ -71,9 +73,15 @@ function ProductCard({ product }) {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
+    const handleNavigateToProductDetails = () => {
+        navigate("/api/user/products/details", {
+            state: { product: product }
+        });
+    };
+
 
     return (
-        <div>
+        <div className="divide-y-2 divide-fuchsia-400">
             <div className="relative">
                 {/* Main Image */}
                 <div className="relative h-72 w-full overflow-hidden rounded-lg group shadow-xl ring-slate-200 ring-1">
@@ -118,23 +126,33 @@ function ProductCard({ product }) {
                 </div>
 
                 {/* Product Info */}
-                <div className="relative mt-4">
-                    <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
-                    <p className="mt-1 text-sm text-gray-500">${product.price}</p>
+                <div className="relative mt-4 flex justify-between bg-gray-300 p-2 shadow-gray-500 shadow-md">
+                    <div className="flex items-center justify-center space-x-5 text-center">
+                        <h3 className="text-sm font-medium text-gray-900 text-center">{product.name}</h3>
+                        <p className="mt-1 text-sm text-gray-500 text-center">${product.price}</p>
+                    </div>
+
+                    {/*✅ go to product details*/}
+                    <div className="text-center flex justify-center bg-gray-500 w-1/3 py-1 rounded-md cursor-pointer hover:bg-gray-800 hover:text-slate-400 transition" onClick={handleNavigateToProductDetails}>
+                        <p className="flex items-center justify-center">details</p>
+                    </div>
+
                 </div>
 
                 {/* Sale Badge */}
                 {product.isOnSale && (
-                    <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
+                    <div
+                        className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-semibold">
                         SALE
                     </div>
                 )}
             </div>
 
+
             {/* Add to Cart Button */}
-            <div className="mt-6">
+            <div className="mt-6 text-center flex justify-center">
                 <button
-                    className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-full shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-1/2 shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed "
                     onClick={handleAddToCart}
                     disabled={isAdding}
                 >
@@ -144,6 +162,7 @@ function ProductCard({ product }) {
         </div>
     );
 }
+
 // endregion
 
 export default ProductsInCategory;

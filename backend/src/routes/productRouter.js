@@ -219,4 +219,18 @@ productRouter.post("/api/user/products-in-category", async (req, res) => {
 });
 //endregion
 
+//region✅ product details
+productRouter.post("/api/user/products/details", async (req, res) => {
+
+    const {productId} = req.body;
+
+    if (!productId) {
+        return res.status(404).json({success: false, message: "Products ID is missing"});
+    }
+
+
+
+});
+//endregion
+
 module.exports = productRouter;

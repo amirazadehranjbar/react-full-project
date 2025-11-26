@@ -32,7 +32,7 @@ function UserHeaderChildren() {
     }, [dispatch]);
 
     return (
-        <header className="bg-gray-200 w-full shadow-gray-800 shadow-md">
+        <header className="bg-gray-200 w-full shadow-gray-800 shadow-md z-100">
             <nav aria-label="Global" className="mx-auto flex max-w-8xl items-center justify-between p-2 lg:px-3">
 
 

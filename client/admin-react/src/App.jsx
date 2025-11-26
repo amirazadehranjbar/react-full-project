@@ -22,6 +22,7 @@ import UserProfile from "./pages/user/userProfile/UserProfile.jsx";
 import UserProfileLayout from "./layouts/UserProfileLayout.jsx";
 import AdminProtectedRoutes from "./protectedRoutes/AdminProtectedRoutes.jsx";
 import UserBagPage from "./pages/user/userBag/UserBagPage.jsx";
+import ProductDetails from "./pages/products/ProductDetails.jsx";
 
 function App() {
     const location = useLocation();
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/api/user" element={<UserMainPage/>}/>
                     <Route path="/api/user/products-in-category" element={<ProductsInCategory/>}></Route>
                     <Route path="/api/user/cart" element={<UserBagPage/>}></Route>
+                    <Route path="/api/user/products/details" element={<ProductDetails/>}></Route>
                 </Route>
 
                 <Route element={<UserProfileLayout/>}>

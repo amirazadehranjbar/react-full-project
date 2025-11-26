@@ -1,12 +1,13 @@
 // src/pages/user/UserMainPage.jsx
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { getCategory } from "../../redux/features/category/categoryReducer.js";
-import { useNavigate } from "react-router";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect} from "react";
+import {getCategory} from "../../redux/features/category/categoryReducer.js";
+import {useNavigate} from "react-router";
 import CategoryCard3D from "../../components/CategoryCard3D";
+import Galaxy from "../../components/backgrounds/Galaxy.jsx";
 
 function UserMainPage() {
-    const { isLoadingCategory, isErrorCategory, errorCategory, categories } = useSelector(state => state.categoryReducer);
+    const {isLoadingCategory, categories} = useSelector(state => state.categoryReducer);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -16,35 +17,49 @@ function UserMainPage() {
 
     const handleCategoryClick = (categoryID) => {
         navigate("/api/user/products-in-category", {
-            state: { categoryID }
+            state: {categoryID}
         });
     };
 
     return (
-        <div className="bg-gray-400 py-24 md:py-32">
-            <div className="mx-auto grid max-w-8xl grid-cols-1 gap-20 px-6 lg:px-8 xl:grid-cols-5">
+        <div className="relative min-h-screen py-24 md:py-32">
+            {/* Galaxy Background - Fixed behind everything */}
+            <div className="fixed inset-0 w-full h-full z-0 bg-gray-800">
+                <Galaxy
+                    transparent={true}
+                    hueShift={140}
+                    density={1.2}
+                    speed={0.5}
+                    glowIntensity={0.4}
+                    saturation={0.3}
+                    twinkleIntensity={0.4}
+                    rotationSpeed={0.05}
+                    mouseInteraction={true}
+                    mouseRepulsion={false}
+                />
+            </div>
 
+            {/* Content - Above galaxy background */}
+            <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
                 {/* Header Section */}
-                <div className="max-w-12xl xl:col-span-2 bg-gray-200 p-2 rounded-md shadow-md shadow-gray-500">
-                    <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
+                <div className="mb-16 text-center">
+                    <h2 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">
                         Our Categories
                     </h2>
-                    <p className="mt-6 text-lg/8 text-gray-600">
+                    <p className="text-xl text-gray-200 drop-shadow-md">
                         Explore our collection with interactive 3D models
                     </p>
                 </div>
 
-                {/* Categories List with 3D Models */}
-                <ul
-                    role="list"
-                    className="divide-y divide-gray-200 xl:col-span-3 space-y-10 lg:w-full sm:w-full bg-gray-100 rounded-md p-4"
-                >
-                    {isLoadingCategory && (
-                        <div className="flex justify-center items-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-                        </div>
-                    )}
+                {/* Loading State */}
+                {isLoadingCategory && (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+                    </div>
+                )}
 
+                {/* Categories Grid */}
+                <div className="grid grid-cols-1 gap-8 lg:gap-12">
                     {categories.map((category) => (
                         <CategoryCard3D
                             key={category._id}
@@ -52,7 +67,7 @@ function UserMainPage() {
                             onClick={() => handleCategoryClick(category._id)}
                         />
                     ))}
-                </ul>
+                </div>
             </div>
         </div>
     );

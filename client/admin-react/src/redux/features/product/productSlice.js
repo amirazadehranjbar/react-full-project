@@ -2,6 +2,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 
+//region✅ get Products By Category
 export const getProductsByCategory = createAsyncThunk(
     "getProductsByCategory",
 
@@ -17,7 +18,12 @@ export const getProductsByCategory = createAsyncThunk(
         }
 
     }
-)
+);
+//endregion
+
+//region✅ product details
+
+//endregion
 
 
 

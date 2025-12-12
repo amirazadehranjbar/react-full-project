@@ -1,12 +1,80 @@
 // React component for uploading product images
-import React, { useState } from 'react';
-import { uploadProductImage, uploadMultipleImages } from '../../../supabaseDatabase/uploadImage.js';
+import React, {useState} from 'react';
+import {uploadProductImage, uploadMultipleImages} from '../../../supabaseDatabase/uploadImage.js';
+import * as PropTypes from "prop-types";
+
+//region🧩 COMPONENTS
+function SelectImage(props) {
+    return <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Images
+        </label>
+        <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={props.onChange}
+            className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100"
+        />
+    </div>;
+}
+
+SelectImage.propTypes = {onChange: PropTypes.func};
+
+
+function SelectedFilesPreview(props) {
+    return <>
+        {props.selectedFiles.length > 0 && (
+            <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                    Selected Files ({props.selectedFiles.length}):
+                </p>
+                <div className="space-y-1">
+                    {props.selectedFiles.map(props.callbackfn)}
+                </div>
+            </div>
+        )}
+    </>;
+}
+
+SelectedFilesPreview.propTypes = {
+    selectedFiles: PropTypes.arrayOf(PropTypes.any),
+    callbackfn: PropTypes.func
+};
+
+function UploadButton(props) {
+    return <button
+        onClick={props.onClick}
+        disabled={props.uploading || props.selectedFiles.length === 0}
+        className={`w-full py-2 px-4 rounded-md font-medium text-white
+                    ${props.uploading || props.selectedFiles.length === 0
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+        }`}
+    >
+        {props.uploading ? "Uploading..." : "Upload Images"}
+    </button>;
+}
+
+UploadButton.propTypes = {
+    onClick: PropTypes.func,
+    uploading: PropTypes.bool,
+    selectedFiles: PropTypes.arrayOf(PropTypes.any)
+};
+
+//endregion
+
 
 /**
  * ImageUploader Component
  * Allows users to select and upload product images to Supabase
  */
-function ImageUploaderComponent({ category = 'mouse' }) {
+function ImageUploaderComponent({category = 'mouse'}) {
     // State for selected files
     const [selectedFiles, setSelectedFiles] = useState([]);
     // State for upload progress and results
@@ -71,52 +139,17 @@ function ImageUploaderComponent({ category = 'mouse' }) {
             <h2 className="text-2xl font-bold mb-4">Upload {category} Images</h2>
 
             {/* File Input */}
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Images
-                </label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileSelect}
-                    className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-md file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100"
-                />
-            </div>
+            <SelectImage onChange={handleFileSelect}/>
 
             {/* Selected Files Preview */}
-            {selectedFiles.length > 0 && (
-                <div className="mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">
-                        Selected Files ({selectedFiles.length}):
-                    </p>
-                    <div className="space-y-1">
-                        {selectedFiles.map((file, index) => (
-                            <div key={index} className="text-sm text-gray-600">
-                                {index + 1}. {file.name} ({(file.size / 1024).toFixed(2)} KB)
-                            </div>
-                        ))}
-                    </div>
+            <SelectedFilesPreview selectedFiles={selectedFiles} callbackfn={(file, index) => (
+                <div key={index} className="text-sm text-gray-600">
+                    {index + 1}. {file.name} ({(file.size / 1024).toFixed(2)} KB)
                 </div>
-            )}
+            )}/>
 
             {/* Upload Button */}
-            <button
-                onClick={handleUpload}
-                disabled={uploading || selectedFiles.length === 0}
-                className={`w-full py-2 px-4 rounded-md font-medium text-white
-                    ${uploading || selectedFiles.length === 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                }`}
-            >
-                {uploading ? 'Uploading...' : 'Upload Images'}
-            </button>
+            <UploadButton onClick={handleUpload} uploading={uploading} selectedFiles={selectedFiles}/>
 
             {/* Upload Results */}
             {uploadResults.length > 0 && (

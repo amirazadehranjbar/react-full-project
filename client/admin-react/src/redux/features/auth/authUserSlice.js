@@ -184,6 +184,37 @@ export const updateCartItem = createAsyncThunk(
 );
 //endregion
 
+//region✅ change user profile avatar
+export const changeUserProfileAvatar = createAsyncThunk(
+    "changeUserProfileAvatar",
+    async ({profileImg}, thunkAPI) => {
+
+        try {
+            // ✅ Create FormData to send file properly
+            const formData = new FormData();
+            formData.append('profileImg', profileImg);  // Must match backend field name!
+
+            // ✅ Send FormData instead of JSON object
+            const res = await axios.post("http://localhost:3500/api/users/upload-image",
+                formData,  // ← Send FormData, not {profileImg}
+                {
+                    // ✅ Set proper headers for file upload
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    withCredentials: true  // ✅ Send cookies for authentication
+                }
+            );
+
+            return res.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response?.data || e.message || e);
+        }
+
+    }
+)
+//endregion
+
 
 const initialState = {
     message: null,
@@ -208,7 +239,7 @@ const AuthUserSlice = createSlice({
     extraReducers: (builder) => builder
 
 
-        //region✅ USER LOGIN
+        //
         .addCase(userLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -228,9 +259,9 @@ const AuthUserSlice = createSlice({
             state.success = false;
             state.isAuthenticated = false;
         })
-        //endregion
+        //✅ USER LOGIN
 
-        //region ✅ ADMIN LOGIN
+        //
         .addCase(adminLogin.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -257,9 +288,9 @@ const AuthUserSlice = createSlice({
             state.success = false;
             state.isAuthenticated = false;
         })
-        // endregion
+        //✅ ADMIN LOGIN
 
-        //region ✅ REGISTER
+        //
         .addCase(userRegister.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -283,7 +314,7 @@ const AuthUserSlice = createSlice({
             state.message = action.payload?.message || "User Registration failed";
             state.success = false;
         })
-        //endregion
+         //✅ user Register
 
         //region ✅ PROFILE DATA
         .addCase(userProfile.pending, state => {
@@ -399,6 +430,28 @@ const AuthUserSlice = createSlice({
             state.message = action.payload.message;
         })
     //endregion
+
+        //region✅ change user profile avatar
+        .addCase(changeUserProfileAvatar.pending , state=>{
+            state.isLoading = true;
+            state.isError = false;
+        })
+
+        .addCase(changeUserProfileAvatar.fulfilled , (state , action)=>{
+            state.isLoading = false;
+            state.isError = false;
+            // ✅ FIXED: Use profileImg (relative path) instead of fullUrl
+            // Frontend adds http://localhost:3500 prefix, so we need relative path here
+            state.data.profileImg = action.payload.data.profileImg || "/images/profile/default.jpg";
+            console.log("✅ Profile image updated in Redux:", state.data.profileImg);
+        })
+
+        .addCase(changeUserProfileAvatar.rejected , (state , action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload.message || "fialed change user avater"
+        })
+        //endregion
 
 });
 

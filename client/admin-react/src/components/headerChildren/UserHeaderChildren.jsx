@@ -80,7 +80,7 @@ function UserHeaderChildren() {
                                 className="absolute -top-1 -right-1 flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-semibold text-white bg-red-600 rounded-full animate-pulse">{data.cart.items.length || 0}</span>
                         </div>
                         <BellAlertIcon className="text-sky-700 size-6 mr-2"/>
-                        <img src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
+                        <img src={`http://localhost:3500${data.profileImg}`}
                              className="w-12 h-12 rounded-full" alt=""/>
                         <DropdownWithIcon/>
                     </div>

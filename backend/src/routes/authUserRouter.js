@@ -6,9 +6,11 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const {ensureUserAuthenticated} = require("../middleware/authMiddleware");
+const {ensureUserAuthenticated, authenticate} = require("../middleware/authMiddleware");
 const {ProductModel} = require("../models/productModel");
 const InventoryModel = require("../models/inventoryModel");
+const multer = require("multer");
+const {isAuthenticated} = require("passport/lib/http/request");
 //endregion
 
 //region ✅ REGISTER
@@ -179,7 +181,7 @@ router.get("/api/users/logout", ensureUserAuthenticated, async (req, res) => {
                 if (err) {
                     console.error("❌ Session destroy error:", err);
                 }
-                console.log("✅ User logged out successfully");
+
             });
 
             return res.status(200).json({
@@ -346,8 +348,6 @@ router.put("/api/users/cart/update-quantity", ensureUserAuthenticated, async (re
 
         await user.save();
 
-        console.log("🚀 ~  ~ user.cart: ", user.cart);
-
         return res.status(200).json({
             success: true,
             message: "Cart updated successfully",
@@ -386,4 +386,66 @@ router.delete("/api/users/cart", ensureUserAuthenticated, async (req, res) => {
     }
 });
 //endregion
+
+//region✅ upload profile image
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // ✅Save files to public/images/profile folder
+        cb(null, 'public/images/profile');
+    },
+    filename: function (req, file, cb) {
+        // ✅Add timestamp to prevent filename conflicts
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = file.originalname.substring(file.originalname.lastIndexOf('.'));
+        cb(null, file.fieldname + '-' + uniqueSuffix + ext)
+    }
+})
+
+const upload = multer({storage: storage})
+router.post("/api/users/upload-image", ensureUserAuthenticated, upload.single('profileImg'), async (req, res) => {
+
+    try {
+
+        // ✅Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({success: false, message: "No file uploaded"});
+        }
+
+        const userID = req.user._id;
+
+        const foundedUser = await User.findById(userID);
+
+        if (!foundedUser) {
+            return res.status(404).json({success: false, message: "User not found"});
+        }
+
+        // ✅ FIXED: Store URL path (not filesystem path) so frontend can access it
+        // Frontend will use: http://localhost:3500/images/profile/filename.jpg
+        foundedUser.profileImg = `/images/profile/${req.file.filename}`;
+
+        await foundedUser.save();
+
+        console.log("✅ Profile image URL saved:", foundedUser.profileImg);
+
+        return res.status(200).json({
+            success: true,
+            message: "Uploaded successfully.",
+            data: {
+                profileImg: foundedUser.profileImg,
+                // ✅ ADDED: Full URL for easier frontend use
+                fullUrl: `http://localhost:${process.env.PORT || 3500}${foundedUser.profileImg}`
+            }
+        });
+
+
+    } catch (err) {
+        console.error("❌ Upload error:", err);
+        return res.status(500).json({success: false, message: err.message || "Failed to upload image"});
+    }
+
+});
+
+
+//endregion
+
 module.exports = router;

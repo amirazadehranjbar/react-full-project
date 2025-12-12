@@ -23,6 +23,7 @@ import UserProfileLayout from "./layouts/UserProfileLayout.jsx";
 import AdminProtectedRoutes from "./protectedRoutes/AdminProtectedRoutes.jsx";
 import UserBagPage from "./pages/user/userBag/UserBagPage.jsx";
 import ProductDetails from "./pages/products/ProductDetails.jsx";
+import ManageProductsImages from "./pages/products/manage-products-images/ManageProductsImages.jsx";
 
 function App() {
     const location = useLocation();
@@ -65,11 +66,20 @@ function App() {
 
 
                 <Route element={<DashboardLayout/>}>
+
                     <Route path="/admin-dashboard" element={<SelectReportAdminDashboard/>}/>
-                    <Route path="/admin/sales-report" element={<SalesReport/>}></Route>
+
+                    <Route path="/manage-products-images"
+                           element={<ManageProductsImages/>}/>
+
+                    <Route path="/admin/sales-report" element={<SalesReport/>}/>
+
                     <Route path="/store/managePG" element={<ManagePg/>}/>
+
                     <Route path="/store/manageColors" element={<ManageColors/>}/>
+
                     <Route path="/store/manageGuaranties" element={<ManageGuaranties/>}/>
+
                 </Route>
             </Route>
             {/*endregion*/}

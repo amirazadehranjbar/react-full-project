@@ -55,7 +55,7 @@ function CategoryCard3D({ category, onClick }) {
             <div className="absolute right-0 top-0 bottom-0 w-1/3 flex flex-col justify-center items-center p-6 space-y-4">
                 {/* Category Name */}
                 <div className="w-full bg-slate-600/90 backdrop-blur-sm rounded-lg px-6 py-4 shadow-lg">
-                    <h3 className="text-xl font-bold text-white text-center">
+                    <h3 className="text-xl md:text-sm max-sm:text-sm font-bold text-white text-center">
                         {category.name}
                     </h3>
                 </div>
@@ -63,7 +63,7 @@ function CategoryCard3D({ category, onClick }) {
                 {/* Explore Button */}
                 <button
                     onClick={onClick}
-                    className="w-full bg-white/80 backdrop-blur-sm hover:bg-white border-2 border-slate-300 rounded-lg px-6 py-3 text-slate-700 font-semibold transition-all duration-300 hover:scale-105 shadow-md cursor-pointer"
+                    className="w-full bg-white/80 backdrop-blur-sm hover:bg-white border-2 border-slate-300 rounded-lg px-6 py-3 text-slate-700 font-semibold transition-all duration-300 hover:scale-105 shadow-md cursor-pointer md:text-sm max-sm:text-sm text-center"
                 >
                     Explore products
                 </button>

@@ -2,3 +2,4 @@ node_modules/
 *.log
 .env
 /client/admin-react/src/all.txt
+E:\Projects\React\react-full-project\client\admin-react\src\utilities\supabaseConfig.js

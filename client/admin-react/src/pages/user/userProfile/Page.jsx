@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Dialog, DialogBackdrop, DialogPanel, TransitionChild} from '@headlessui/react'
 import {
     ChartBarSquareIcon,
@@ -11,7 +11,8 @@ import {
 } from '@heroicons/react/24/outline'
 import {Bars3Icon, MagnifyingGlassIcon} from '@heroicons/react/20/solid'
 import {ChevronDownIcon} from '@heroicons/react/16/solid'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {changeUserProfileAvatar} from "../../../redux/features/auth/authUserSlice.js";
 
 const navigation = [
     {name: 'Home', href: '/api/user', icon: HomeModernIcon, current: false},
@@ -43,7 +44,8 @@ function Page() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const {data} = useSelector(state => state.authUserReducer);
 
-    console.log(`user profile data = ${JSON.stringify(data)}`);
+    const dispatch = useDispatch();
+
 
     return (
         <>
@@ -132,7 +134,7 @@ function Page() {
                                             >
                                                 <img
                                                     alt=""
-                                                    src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
+                                                    src={`http://localhost:3500${data.profileImg}`}
                                                     className="size-8 rounded-full bg-gray-800"
                                                 />
                                                 <span className="sr-only">Your profile</span>
@@ -153,7 +155,7 @@ function Page() {
                         <div className="flex h-16 shrink-0 items-center">
                             <img
                                 alt="Your Company"
-                                src={data.profileImg || "/src/assets/images/logo.png"}
+                                src={`http://localhost:3500${data.profileImg}`}
                                 className="h-12 w-auto"
                             />
                         </div>
@@ -210,7 +212,7 @@ function Page() {
                                     >
                                         <img
                                             alt=""
-                                            src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
+                                            src={`http://localhost:3500${data.profileImg}`}
                                             className="size-8 rounded-full bg-gray-800"
                                         />
                                         <span className="sr-only">Your profile</span>
@@ -289,16 +291,28 @@ function Page() {
                                         <div className="col-span-full flex items-center gap-x-8">
                                             <img
                                                 alt=""
-                                                src={data.profileImg || "https://cdn-icons-png.flaticon.com/512/8608/8608769.png"}
+                                                src={`http://localhost:3500${data.profileImg}`}
                                                 className="size-24 flex-none rounded-lg bg-gray-800 object-cover"
                                             />
                                             <div>
-                                                <button
-                                                    type="button"
+                                                {/* ✅ File input now properly handles upload */}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"  // ✅ Only allow images
                                                     className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-white/20"
-                                                >
-                                                    Change avatar
-                                                </button>
+                                                    onChange={(event) => {
+                                                        // ✅ Get File object from files[0]
+                                                        const file = event.target.files[0];
+
+                                                        if (file) {
+                                                            console.log("📁 File selected:", file.name);
+                                                            // ✅ Dispatch upload action with file object
+                                                            dispatch(changeUserProfileAvatar({profileImg: file}));
+
+                                                        }
+
+                                                    }}
+                                                />
                                                 <p className="mt-2 text-xs/5 text-gray-400">JPG, GIF or PNG. 1MB
                                                     max.</p>
                                             </div>

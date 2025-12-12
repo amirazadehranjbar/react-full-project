@@ -17,6 +17,10 @@ const passport = require("passport");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Serve static files from public folder
+// This makes files accessible at: http://localhost:3500/images/profile/filename.jpg
+app.use('/images', express.static('public/images'));
+
 // connect to MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log("✅ Connected to MongoDB Atlas"))

@@ -7,38 +7,27 @@ const initialState = {
         {
             name: 'Store',
             href: '/store',
-            icon: "BuildingStorefrontIcon", // ✅ String
-            subItems: [
-                {name: "manage product group", href: '/store/managePG'},
-                {name: "manage product", href: '/store'},
-                {name: "manage brands", href: '/store'},
-                {name: "mange garanties", href: '/store/manageGuaranties'},
-                {name: "mange colors", href: '/store/manageColors'},
-                {name: "mange discounts", href: '/team'},
-            ]
+            icon: "BuildingStorefrontIcon",
+        },
+        {
+            name: 'Manage products images',
+            href:'/manage-products-images',
+            icon: "PhotoIcon"
         },
 
-        {name: 'Orders', href: '/orders', icon: "ShoppingCartIcon", subItems: [
-                {name: "manage baskets", href: '/orders'},
-                {name: "manage orders", href: '/orders'},
-                {name: "manage send", href: '/orders'},
-            ]},
+        {name: 'Orders', href: '/orders', icon: "ShoppingCartIcon"},
 
-        {name: 'Users', href: '/users', icon: "UsersIcon", subItems: [
-                {name: "see users", href: '/users'},
-                {name: "roles", href: '/users'},
-                {name: "partners", href: '/users'},
-            ]},
+        {
+            name: 'Users', href: '/users', icon: "UsersIcon"
+        },
 
-        {name: 'Contact', href: '/contact', icon: "RocketLaunchIcon", subItems: [
-                {name: "questions", href: '/contact'},
-                {name: "comments", href: '/contact'},
-            ]},
+        {
+            name: 'Contact', href: '/contact', icon: "RocketLaunchIcon"
+        },
 
-        {name: 'Reports', href: '/reports', icon: "ChartPieIcon", subItems: [
-                {name: "reports 1", href: '/reports'},
-                {name: "reports 2", href: '/reports'},
-            ]},
+        {
+            name: 'Reports', href: '/reports', icon: "ChartPieIcon"
+        },
     ],
 
     sidebarOpen: false,

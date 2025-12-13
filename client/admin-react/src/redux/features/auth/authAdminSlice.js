@@ -29,7 +29,7 @@ const initialState = {
     email: "",
     profileImg: "",
     role: "admin",
-       message: null,
+    message: null,
     isLoading: false,
     isError: false,
     isAuthenticated: false,  // ✅ Added

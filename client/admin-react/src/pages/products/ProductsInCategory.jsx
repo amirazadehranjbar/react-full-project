@@ -1,7 +1,7 @@
 // frontend/src/pages/products/ProductsInCategory.jsx
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import {getProductsByCategory} from "../../redux/features/product/productSlice.js";
+import {getProductsByCategory, getProductsImagesFromSupabase} from "../../redux/features/product/productSlice.js";
 import {useLocation} from "react-router-dom";
 import {RingLoader} from "react-spinners";
 import {addToCart} from "../../redux/features/auth/authUserSlice.js";
@@ -12,12 +12,16 @@ function ProductsInCategory() {
     const categoryID = location.state.categoryID;
 
 
-    const {isLoading, isError, message, categoryName, data} = useSelector(state => state.productReducer);
+    const {isLoading, isError, message, categoryName, data , imagesSupabase} = useSelector(state => state.productReducer);
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getProductsByCategory({categoryID}));
     }, [categoryID, dispatch]);
+
+    // useEffect(() => {
+    //     dispatch(getProductsImagesFromSupabase())
+    // }, []);
 
 
     return (
@@ -53,6 +57,10 @@ function ProductCard({product}) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const {role} = useSelector(state=>state.authAdminReducer);
+    console.log("🚀 ~ ProductCard ~ role: ", role);
+
+
     const handleAddToCart = async () => {
         setIsAdding(true);
         try {
@@ -75,7 +83,7 @@ function ProductCard({product}) {
 
     const handleNavigateToProductDetails = () => {
         navigate("/api/user/products/details", {
-            state: { product: product }
+            state: { product: product ,adminMode : role === "admin"}
         });
     };
 
@@ -152,12 +160,15 @@ function ProductCard({product}) {
             {/* Add to Cart Button */}
             <div className="mt-6 text-center flex justify-center">
                 <button
-                    className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-1/2 shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed "
+                    className={addToBagButton}
                     onClick={handleAddToCart}
                     disabled={isAdding}
                 >
                     {isAdding ? "Adding..." : "Add to bag"}
                 </button>
+
+                {role==="admin" && (<button className={addToBagButton.replace("w-1/2" , "w-14")} onClick={handleNavigateToProductDetails}>edite product</button>)}
+
             </div>
         </div>
     );
@@ -166,6 +177,10 @@ function ProductCard({product}) {
 // endregion
 
 export default ProductsInCategory;
+
+//region🖌️ styles
+export const addToBagButton = `relative flex items-center justify-center rounded-md border border-transparent bg-gray-300 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 w-1/2 shadow-md shadow-gray-400 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed `
+//endregion
 
 
 

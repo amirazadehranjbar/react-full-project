@@ -15,6 +15,12 @@ const initialState = {
             icon: "PhotoIcon"
         },
 
+        {
+          name:"Change Products Info",
+          href: "/change-products-info",
+          icon: "WrenchIcon"
+        },
+
         {name: 'Orders', href: '/orders', icon: "ShoppingCartIcon"},
 
         {

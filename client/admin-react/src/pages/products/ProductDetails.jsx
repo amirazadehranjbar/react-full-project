@@ -1,24 +1,21 @@
 // frontend/src/pages/products/ProductDetails.jsx
 import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useDispatch} from "react-redux";
 import {ProductDetailsComp} from "./components/ProductDetailsComp.jsx"
 import {HelperFunctions} from "./helperFunctions/HelperFunctions.js";
 
 function ProductDetails() {
+
+    //region✅Variables
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const {product, adminMode} = location.state || {};
-
+    const {product} = location.state || {};
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [isAdding, setIsAdding] = useState(false);
-
-    // ✅ Debugging
-    useEffect(() => {
-        console.log("Location state:", location.state);
-    }, [location.state]);
+    //endregion
 
     // ✅ Handle missing product (if user navigates directly to URL)
     if (!product) {
@@ -40,6 +37,8 @@ function ProductDetails() {
                     {/* Passing wrapped helper functions with required parameters to ImageGalleryComp */}
                     {/* onClick: Previous image handler - wraps prevImage with setCurrentImageIndex and images array */}
                     {/* onClick1: Next image handler - wraps nextImage with setCurrentImageIndex and images array */}
+
+                    {/*region ImageGalleryComp*/}
                     <ProductDetailsComp.ImageGalleryComp images={images} currentImageIndex={currentImageIndex} product={product}
                                       onClick={() => HelperFunctions.prevImage(setCurrentImageIndex, images)} 
                                       onClick1={() => HelperFunctions.nextImage(setCurrentImageIndex, images)} 
@@ -60,6 +59,7 @@ function ProductDetails() {
                             />
                         </button>
                     )}/>
+                    {/*endregion*/}
 
                     {/* Product Info */}
                     <div className="flex flex-col">
@@ -117,34 +117,31 @@ function ProductDetails() {
 
                         {/* Quantity Selector */}
                         {/* Only shown when not in admin mode */}
-                        {!adminMode
-                            ? <ProductDetailsComp.QuantitySelectorComp 
+                         <ProductDetailsComp.QuantitySelectorComp
                                     onClick={() => HelperFunctions.decrementQuantity(setQuantity)} 
                                     quantity={quantity}
                                     onClick1={() => HelperFunctions.incrementQuantity(setQuantity)}/>
-                            : null}
+
 
                         {/* Add to Cart Button */}
                         {/* Only shown when not in admin mode */}
                         {/* onClick: Wrapped handleAddToCart with all required parameters: dispatch, product, quantity, setIsAdding */}
-                        {!adminMode ? <button
+                        <button
                             onClick={() => HelperFunctions.handleAddToCart(dispatch, product, quantity, setIsAdding)}
                             disabled={isAdding}
                             className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mb-4"
                         >
                             {isAdding ? "Adding to Cart..." : `Add ${quantity} to Cart`}
-                        </button> : null}
+                        </button>
 
                         {/* Buy Now Button */}
-                        {!adminMode ? <button
+                        <button
                             className="w-full bg-gray-200 text-gray-900 py-4 rounded-xl font-bold text-lg hover:bg-gray-300 transition">
                             Buy Now
-                        </button> : null}
+                        </button>
 
                         {/* Additional Info */}
-                        {!adminMode
-                            ? <ProductDetailsComp.AdditionalInfoComp/>
-                            : null}
+                         <ProductDetailsComp.AdditionalInfoComp/>
                     </div>
                 </div>
             </div>

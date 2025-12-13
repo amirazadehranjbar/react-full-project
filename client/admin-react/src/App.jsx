@@ -24,6 +24,7 @@ import AdminProtectedRoutes from "./protectedRoutes/AdminProtectedRoutes.jsx";
 import UserBagPage from "./pages/user/userBag/UserBagPage.jsx";
 import ProductDetails from "./pages/products/ProductDetails.jsx";
 import ManageProductsImages from "./pages/products/manage-products-images/ManageProductsImages.jsx";
+import ChangeProductsInfo from "./pages/adminDashboard/ChangeProductsInfo/ChangeProductsInfo.jsx";
 
 function App() {
     const location = useLocation();
@@ -71,6 +72,9 @@ function App() {
 
                     <Route path="/manage-products-images"
                            element={<ManageProductsImages/>}/>
+
+                    <Route path="/change-products-info" element={<ChangeProductsInfo/>}
+                    ></Route>
 
                     <Route path="/admin/sales-report" element={<SalesReport/>}/>
 

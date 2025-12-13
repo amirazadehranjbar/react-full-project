@@ -9,7 +9,8 @@ import {
     ShoppingCartIcon,
     TableCellsIcon,
     UsersIcon,
-    PhotoIcon
+    PhotoIcon,
+    WrenchIcon
 } from "@heroicons/react/24/outline/index.js";
 
 // ✅ Map icon names to components
@@ -20,7 +21,8 @@ const iconMap = {
     UsersIcon: UsersIcon,
     RocketLaunchIcon: RocketLaunchIcon,
     ChartPieIcon: ChartPieIcon,
-    PhotoIcon:PhotoIcon
+    PhotoIcon:PhotoIcon,
+    WrenchIcon:WrenchIcon
 };
 
 function SidebarItemsLinksCard({ item, isOpen, onToggle }) {

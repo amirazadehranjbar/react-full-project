@@ -57,9 +57,6 @@ function ProductCard({product}) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {role} = useSelector(state=>state.authAdminReducer);
-    console.log("🚀 ~ ProductCard ~ role: ", role);
-
 
     const handleAddToCart = async () => {
         setIsAdding(true);
@@ -83,7 +80,7 @@ function ProductCard({product}) {
 
     const handleNavigateToProductDetails = () => {
         navigate("/api/user/products/details", {
-            state: { product: product ,adminMode : role === "admin"}
+            state: { product: product}
         });
     };
 
@@ -167,7 +164,6 @@ function ProductCard({product}) {
                     {isAdding ? "Adding..." : "Add to bag"}
                 </button>
 
-                {role==="admin" && (<button className={addToBagButton.replace("w-1/2" , "w-14")} onClick={handleNavigateToProductDetails}>edite product</button>)}
 
             </div>
         </div>

@@ -1,83 +1,67 @@
-import React from "react";
-import {Tabs, Tab, Card, CardBody} from "@heroui/react";
-import {Keyboard, Monitor, Mouse, SpeakerIcon,} from "lucide-react";
+import {Tabs} from "@heroui/react";
+import {Keyboard, Monitor, Mouse, SpeakerIcon} from "lucide-react";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect, useState} from "react";
+import {getProductsByCategory} from "../../../../redux/features/product/productSlice.js";
+import {getCategory} from "../../../../redux/features/category/categoryReducer.js";
 
 
 export default function TabsComp() {
 
+    const {isLoadingCategory, isErrorCategory, errorCategory, categories} = useSelector(state => state.categoryReducer);
+
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getCategory());
+    }, [dispatch]);
+
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex w-full flex-col">
-                <Tabs aria-label="Options" placement="start"
-                      className="bg-sky-900/20 rounded-br-md border-r border-b border-gray-300 shadow shadow-gray-800">
+        <Tabs className="w-full max-w-lg bg-gray-500 h-screen" orientation="vertical">
+            <Tabs.ListContainer className="w-full h-screen">
 
 
-                    <Tab key="monitor" name="monitor" title={
-                        <div className="flex items-center border-b">
-                            <Monitor/>
-                            <span>monitor</span>
-                        </div>
-                    }>
-                        <Card>
-                            <CardBody>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </CardBody>
-                        </Card>
-                    </Tab>
+                <Tabs.List aria-label="Vertical tabs" className="bg-gray-300 rounded-none h-full">
+
+                    {isLoadingCategory && <div>is loading ...</div>}
+
+                    {isErrorCategory && <div>Error</div>}
+
+                    {categories && categories.length > 0 && (<>
+                        {categories.map(category => {
+                            return (
+                                <Tabs.Tab id={category.name} className="text-lg" key={category._id}>
+                                    <div className="flex w-full justify-between items-center">
+                                        {<img alt="icon" src={category.icon} className="w-1/5" color={`#6a7282`}/>}
+                                        {category.name}
+                                    </div>
+                                    <Tabs.Indicator className="rounded-md"/>
+                                </Tabs.Tab>
+                            );
+                        })}
+                    </>)}
 
 
-                    <Tab key="speaker" title={
-                        <div className="flex items-center space-x-2">
-                            <SpeakerIcon/>
-                            <span>speaker</span>
-                        </div>
-                    }>
-                        <Card>
-                            <CardBody>
-                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                                esse cillum dolore eu fugiat nulla pariatur.
-                            </CardBody>
-                        </Card>
-                    </Tab>
+                </Tabs.List>
+            </Tabs.ListContainer>
+            {isLoadingCategory && <div>is loading ...</div>}
 
+            {isErrorCategory && <div>Error</div>}
 
-                    <Tab key="mouse" title={
-                        <div className="flex items-center space-x-2">
-                            <Mouse className="mr-4"/>
-                            <span className="mr-1">mouse</span>
-                        </div>
-                    }>
-                        <Card>
-                            <CardBody>
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                                mollit anim id est laborum.
-                            </CardBody>
-                        </Card>
-                    </Tab>
+            {categories && categories.length > 0 && (<>
+                {categories.map(category => {
+                    return (
+                        <Tabs.Panel className="px-4" id={category.name} key={category._id}>
 
+                            <h3 className="mb-2 font-semibold">{category.name}</h3>
 
-                    <Tab key="keyboard" title={
-                        <div className="flex items-center space-x-2">
-                            <Keyboard/>
-                            <span className="mr-1">keyboard</span>
-                        </div>
-                    }>
-                        <Card>
-                            <CardBody>
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                                mollit anim id est laborum.
-                            </CardBody>
-                        </Card>
-                    </Tab>
+                        </Tabs.Panel>
+                    );
+                })}
+            </>)}
 
-
-                </Tabs>
-            </div>
-        </div>
+        </Tabs>
     );
 }
-

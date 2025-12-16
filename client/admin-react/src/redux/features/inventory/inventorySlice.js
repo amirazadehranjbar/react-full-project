@@ -7,11 +7,17 @@ import axios from "axios";
 export const getInventory = createAsyncThunk(
     "getInventory",
     async (arg, thunkAPI) => {
+
         try {
-            const res = await axios.get("http://localhost:3500/api/users/inventory", {
+            const res = await axios.get("http://localhost:3500/api/admin/inventory", {
                 withCredentials: true  // ✅ Send cookies with request
             });
+
+            console.log("🚀 ~  ~ res.data: ", res.data);
+
             return res.data;
+
+
         } catch (e) {
             // ✅ Handle authentication errors
             if (e.response?.status === 401 || e.response?.status === 403) {
@@ -38,7 +44,7 @@ export const updateProductInventory = createAsyncThunk(
         try {
 
             const res = await axios.put(
-                "http://localhost:3500/api/inventory/update",
+                "http://localhost:3500/api/admin/inventory/update",
                 {productID, amount},
                 {withCredentials: true}
             );

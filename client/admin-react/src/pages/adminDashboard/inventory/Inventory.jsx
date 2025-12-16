@@ -7,6 +7,8 @@ import FlowBitProgress from "../../../components/progressbar/FlowBitProgress.jsx
 import ComboBoxWithImage from "../../../components/comboBox/ComboBoxWithImage.jsx";
 
 function Inventory() {
+
+
     const {data, filteredData, isLoading, isError, error} = useSelector(state => state.inventoryReducer);
     const {categories, isLoadingCategory} = useSelector(state => state.categoryReducer);
     const dispatch = useDispatch();
@@ -17,7 +19,7 @@ function Inventory() {
         dispatch(getCategory());
     }, [dispatch]);
 
-    // ✅ Initialize filteredData when data loads
+    // // ✅ Initialize filteredData when data loads
     useEffect(() => {
         if (data.length > 0 && filteredData.length === 0) {
             dispatch(filterProductByID(null)); // Show all initially
@@ -67,7 +69,7 @@ function Inventory() {
                     </div>
 
                     {/* ✅ Table Section */}
-                    <div className="-mx-4 sm:-mx-0 bg-gray-400 rounded-md">
+                    <div className="-mx-4 sm:mx-0 bg-gray-400 rounded-md">
                         {displayData.length === 0 ? (
                             <div className="text-center py-8 text-gray-600">
                                 No products found in this category

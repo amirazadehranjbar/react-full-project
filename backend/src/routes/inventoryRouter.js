@@ -1,14 +1,16 @@
 // backend/src/routes/inventoryRouter.js
 const express = require("express");
-const {authenticate} = require("../middleware/authMiddleware");
+const {authenticate, authorizeRole} = require("../middleware/authMiddleware");
 const InventoryModel = require("../models/inventoryModel");
 const inventoryRouter = express.Router();
 
 //region ✅ Get inventory data
 inventoryRouter.get(
-    "/api/users/inventory",
+    "/api/admin/inventory",
     authenticate,
+    //authorizeRole,
     async (req, res) => {
+        console.log(req.user);
         try {
             const data = await InventoryModel.find({});
 
@@ -32,7 +34,7 @@ inventoryRouter.get(
 // endregion
 
 //region✅ Update product inventory
-inventoryRouter.post("/api/inventory/update", async (req, res) => {
+inventoryRouter.post("/api/admin/inventory/update", async (req, res) => {
 
     try {
         const {productID, amount} = req.body;

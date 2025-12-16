@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/userModel');
 
-// ✅ For JWT-based authentication
+//region✅ For JWT-based authentication
 const authenticate = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
@@ -46,8 +46,9 @@ const authenticate = async (req, res, next) => {
         });
     }
 };
+//endregion
 
-// ✅ For Passport session-based authentication (used after Google login)
+//region✅ For Passport session-based authentication (used after Google login)
 const ensureUserAuthenticated = (req, res, next) => {
     // Check Passport session first
     if (req.isAuthenticated()) {
@@ -91,8 +92,9 @@ const ensureUserAuthenticated = (req, res, next) => {
         });
     }
 };
+//endregion
 
-// ✅ Check if user has required role
+//region✅ Check if user has required role
 const authorizeRole = (...allowedRoles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -103,6 +105,7 @@ const authorizeRole = (...allowedRoles) => {
         }
 
         if (!allowedRoles.includes(req.user.role)) {
+
             return res.status(403).json({
                 success: false,
                 message: `Access denied. Required role: ${allowedRoles.join(' or ')}`
@@ -112,8 +115,9 @@ const authorizeRole = (...allowedRoles) => {
         next();
     };
 };
+//endregion
 
-// ✅ Check if user can perform password-related actions
+//region✅ Check if user can perform password-related actions
 const requirePassword = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({
@@ -133,6 +137,7 @@ const requirePassword = async (req, res, next) => {
 
     next();
 };
+//endregion
 
 module.exports = {
     authenticate,

@@ -26,7 +26,8 @@
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
     "firebase": "^12.6.0",
-    "flowbite-react": "^0.12.10",
+    "flowbite-react": "^0.12.14",
+    "framer-motion": "^12.23.26",
     "lucide-react": "^0.544.0",
     "ogl": "^1.0.11",
     "prop-types": "^15.8.1",
@@ -38,6 +39,7 @@
     "react-router-dom": "^7.9.3",
     "react-spinners": "^0.17.0",
     "sweetalert2": "^11.26.3",
+    "swiper": "^12.0.3",
     "tailwindcss": "^4.1.13",
     "three": "^0.181.2"
   },

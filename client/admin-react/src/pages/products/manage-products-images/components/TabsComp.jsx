@@ -1,14 +1,17 @@
 import {Tabs} from "@heroui/react";
-import {Keyboard, Monitor, Mouse, SpeakerIcon} from "lucide-react";
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import {getProductsByCategory} from "../../../../redux/features/product/productSlice.js";
 import {getCategory} from "../../../../redux/features/category/categoryReducer.js";
+import {Link} from "react-router-dom";
 
 
 export default function TabsComp() {
 
-    const {isLoadingCategory, isErrorCategory, errorCategory, categories} = useSelector(state => state.categoryReducer);
+    const {isLoadingCategory, isErrorCategory, categories} = useSelector(state => state.categoryReducer);
+
+    const {data, isLoading, isError} = useSelector(state => state.productReducer);
+    const [categoryID, setCategoryID] = useState("");
 
 
     const dispatch = useDispatch();
@@ -17,10 +20,14 @@ export default function TabsComp() {
         dispatch(getCategory());
     }, [dispatch]);
 
+    useEffect(() => {
+        dispatch(getProductsByCategory({categoryID}))
+    }, [categoryID, dispatch]);
+
 
     return (
-        <Tabs className="w-full max-w-lg bg-gray-500 h-screen" orientation="vertical">
-            <Tabs.ListContainer className="w-full h-screen">
+        <Tabs className="w-full bg-transparent h-screen" orientation="vertical">
+            <Tabs.ListContainer className="h-screen">
 
 
                 <Tabs.List aria-label="Vertical tabs" className="bg-gray-300 rounded-none h-full">
@@ -31,8 +38,12 @@ export default function TabsComp() {
 
                     {categories && categories.length > 0 && (<>
                         {categories.map(category => {
+
                             return (
-                                <Tabs.Tab id={category.name} className="text-lg" key={category._id}>
+                                <Tabs.Tab id={category.name} className="text-lg" key={category._id} onClick={() => {
+                                    console.log("🚀 ~ TabsComp ~ category._id: ", category._id);
+                                    setCategoryID(category._id);
+                                }}>
                                     <div className="flex w-full justify-between items-center">
                                         {<img alt="icon" src={category.icon} className="w-1/5" color={`#6a7282`}/>}
                                         {category.name}
@@ -53,10 +64,29 @@ export default function TabsComp() {
             {categories && categories.length > 0 && (<>
                 {categories.map(category => {
                     return (
-                        <Tabs.Panel className="px-4" id={category.name} key={category._id}>
+                        <Tabs.Panel className="w-full" id={category.name} key={category._id}>
+                            <div
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-6 pr-6 pb-6">
 
-                            <h3 className="mb-2 font-semibold">{category.name}</h3>
+                                {isLoading && (<div>loading....</div>)}
 
+                                {isError && (<div>Error</div>)}
+
+                                {data && data.length > 0 && (<>
+                                    {data.map(item => {
+                                        return (<Link
+                                            key={item._id}
+                                            className="border-2 border-gray-400 h-fit p-4 rounded-lg hover:shadow-lg hover:scale-105 hover:shadow-gray-800 transition-all duration-300 cursor-pointer bg-white"
+                                            to="/edite-products-info" state={{item: item}}>
+                                            <div className="text-center font-bold text-gray-800 ">
+                                                {item.name}
+                                            </div>
+                                        </Link>);
+                                    })}
+                                </>)}
+
+
+                            </div>
                         </Tabs.Panel>
                     );
                 })}

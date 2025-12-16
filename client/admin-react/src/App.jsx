@@ -25,6 +25,7 @@ import UserBagPage from "./pages/user/userBag/UserBagPage.jsx";
 import ProductDetails from "./pages/products/ProductDetails.jsx";
 import ManageProductsImages from "./pages/products/manage-products-images/ManageProductsImages.jsx";
 import ChangeProductsInfo from "./pages/adminDashboard/ChangeProductsInfo/ChangeProductsInfo.jsx";
+import EditeProductsInfo from "./pages/adminDashboard/ChangeProductsInfo/EditeProductsInfo.jsx";
 
 function App() {
     const location = useLocation();
@@ -75,6 +76,8 @@ function App() {
 
                     <Route path="/change-products-info" element={<ChangeProductsInfo/>}
                     ></Route>
+
+                    <Route path="/edite-products-info" element={<EditeProductsInfo/>}></Route>
 
                     <Route path="/admin/sales-report" element={<SalesReport/>}/>
 

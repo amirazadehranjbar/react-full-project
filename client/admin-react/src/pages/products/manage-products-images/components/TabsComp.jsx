@@ -41,7 +41,6 @@ export default function TabsComp() {
 
                             return (
                                 <Tabs.Tab id={category.name} className="text-lg" key={category._id} onClick={() => {
-                                    console.log("🚀 ~ TabsComp ~ category._id: ", category._id);
                                     setCategoryID(category._id);
                                 }}>
                                     <div className="flex w-full justify-between items-center">
@@ -77,7 +76,7 @@ export default function TabsComp() {
                                         return (<Link
                                             key={item._id}
                                             className="border-2 border-gray-400 h-fit p-4 rounded-lg hover:shadow-lg hover:scale-105 hover:shadow-gray-800 transition-all duration-300 cursor-pointer bg-white"
-                                            to="/edite-products-info" state={{item: item}}>
+                                            to="/edite-products-info" state={{item: item , category:category}}>
                                             <div className="text-center font-bold text-gray-800 ">
                                                 {item.name}
                                             </div>

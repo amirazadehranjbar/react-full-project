@@ -1,6 +1,6 @@
 // React component for uploading product images
 import React, {useState} from 'react';
-import {uploadProductImage, uploadMultipleImages} from '../../../supabaseDatabase/uploadImage.js';
+import {uploadMultipleImages} from '../../../supabaseDatabase/uploadImage.js';
 import * as PropTypes from "prop-types";
 
 //region🧩 COMPONENTS
@@ -75,6 +75,8 @@ UploadButton.propTypes = {
  * Allows users to select and upload product images to Supabase
  */
 function ImageUploaderComponent({category = 'mouse'}) {
+
+
     // State for selected files
     const [selectedFiles, setSelectedFiles] = useState([]);
     // State for upload progress and results

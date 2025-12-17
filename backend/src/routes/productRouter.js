@@ -214,9 +214,10 @@ productRouter.post("/api/user/products-in-category", async (req, res) => {
         return res.status(500).json({
             success: false,
             message: e.message || "Something went wrong"
-        });
+        })
+
     }
-});
+})
 //endregion
 
 //region✅ product details

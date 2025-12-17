@@ -1,11 +1,12 @@
 import {Switch} from '@headlessui/react'
 
-export default function ToggleSwitchWithIcon({enabled, setEnabled}) {
+export default function ToggleSwitchWithIcon({enabled, setEnabled , name}) {
 
 
 
     return (
         <Switch
+            name={name}
             checked={enabled}
             onChange={setEnabled}
             className="group relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-400 ease-in-out  focus:outline-hidden data-checked:bg-green-400"

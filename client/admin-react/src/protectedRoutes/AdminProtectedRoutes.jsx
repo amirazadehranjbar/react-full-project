@@ -46,7 +46,6 @@ function AdminProtectedRoutes() {
         return <Navigate to="/" replace />;
     }
 
-    console.log("✅ Admin authenticated, rendering protected route");
     // ✅ User is authenticated AND is an admin
     return <Outlet />;
 }

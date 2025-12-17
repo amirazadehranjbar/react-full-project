@@ -13,32 +13,32 @@ function Inventory() {
     const {categories, isLoadingCategory} = useSelector(state => state.categoryReducer);
     const dispatch = useDispatch();
 
-    // ✅ Fetch data on mount
     useEffect(() => {
         dispatch(getInventory());
         dispatch(getCategory());
     }, [dispatch]);
 
-    // // ✅ Initialize filteredData when data loads
-    useEffect(() => {
-        if (data.length > 0 && filteredData.length === 0) {
-            dispatch(filterProductByID(null)); // Show all initially
-        }
-    }, [data, filteredData.length, dispatch]);
 
-    // ✅ Helper function to get category name
+    useEffect(() => {
+        // Check if data and filteredData exist before accessing their length properties to prevent undefined errors
+        if (data && data.length > 0 && (!filteredData || filteredData.length === 0)) {
+            dispatch(filterProductByID(null));
+        }
+    }, [data, dispatch, filteredData]);
+
+
     const getCategoryName = (categoryId) => {
         const category = categories.find(cat => cat._id === categoryId);
         return category ? category.name : "Unknown";
     };
 
-    // ✅ Handle category filter change
+
     const handleCategoryChange = (categoryID) => {
         dispatch(filterProductByID(categoryID));
     };
 
-    // ✅ Decide which data to display
-    const displayData = filteredData.length > 0 ? filteredData : data;
+    // Check if filteredData exists before accessing its length to prevent undefined errors
+    const displayData = filteredData && filteredData.length > 0 ? filteredData : data;
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 h-full w-full bg-gray-500 mt-2 ">
@@ -99,6 +99,8 @@ function Inventory() {
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-400 bg-gray-300">
+
+
                                 {displayData.map((product, index) => {
                                     const stockPercentage = ((product.inventory / product.targetInventory) * 100).toFixed(0);
                                     const stockStatus = stockPercentage < 25 ? 'Low Stock' :
@@ -109,17 +111,20 @@ function Inventory() {
                                     return (
                                         <tr key={product._id || index}>
                                             <td className="w-full max-w-0 py-4 pr-3 pl-4 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0 text-center">
-                                                {product.name}
+                                                {/* Access product name from populated productID object */}
+                                                {product.productID?.name || 'Unknown Product'}
                                                 <dl className="font-normal lg:hidden">
                                                     <dt className="sr-only">Category</dt>
                                                     <dd className="mt-1 truncate text-gray-700">
-                                                        {getCategoryName(product.categoryID)}
+                                                        {/* Access categoryID from populated productID object */}
+                                                        {getCategoryName(product.productID?.categoryID)}
                                                     </dd>
                                                 </dl>
                                             </td>
 
                                             <td className="hidden px-3 py-4 text-sm text-gray-900 lg:table-cell font-medium text-center">
-                                                {getCategoryName(product.categoryID)}
+                                                {/* Access categoryID from populated productID object */}
+                                                {getCategoryName(product.productID?.categoryID)}
                                             </td>
 
                                             <td className="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell">
@@ -142,7 +147,8 @@ function Inventory() {
                                                 <a href="#"
                                                    className="text-indigo-600 hover:text-indigo-900 text-center pr-2">
                                                     Details
-                                                    <span className="sr-only">, {product.name}</span>
+                                                    {/* Access product name from populated productID object */}
+                                                    <span className="sr-only">, {product.productID?.name}</span>
                                                 </a>
                                             </td>
                                         </tr>

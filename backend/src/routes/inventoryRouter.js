@@ -10,9 +10,11 @@ inventoryRouter.get(
     authenticate,
     //authorizeRole,
     async (req, res) => {
-        console.log(req.user);
+        
         try {
-            const data = await InventoryModel.find({});
+            // Populate productID to get full product details including name and categoryID
+            const data = await InventoryModel.find({})
+                .populate('productID', 'name categoryID'); // Get product name and categoryID from Products collection
 
             if (!data || data.length === 0) {
                 return res.status(404).json({
@@ -44,7 +46,9 @@ inventoryRouter.post("/api/admin/inventory/update", async (req, res) => {
             {new:true}
         );
 
-        const newInventoryData = await InventoryModel.find({});
+        // Populate productID to get full product details including name and categoryID
+        const newInventoryData = await InventoryModel.find({})
+            .populate('productID', 'name categoryID'); // Get product name and categoryID from Products collection
 
         return res.status(200).json({success: true, message:"product inventory updated successfully" ,data: newInventoryData});
 

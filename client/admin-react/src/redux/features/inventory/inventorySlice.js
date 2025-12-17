@@ -60,13 +60,14 @@ export const updateProductInventory = createAsyncThunk(
 )
 //endregion
 
+// Initial state with corrected property names to match component expectations
 const initialState = {
     isLoading: false,
     isError: false,
     success: false,
     message: "",
-    inventoryData: [],
-    filteredInventoryData: [],
+    data: [], // Changed from inventoryData to data for consistency with component
+    filteredData: [], // Changed from filteredInventoryData to filteredData for consistency with component
 };
 
 const inventorySlice = createSlice({
@@ -77,15 +78,20 @@ const inventorySlice = createSlice({
 
     reducers: {
         filterProductByID: (state, action) => {
+
             const categoryID = action.payload;
 
+            // If no categoryID provided, show all data
             if (!categoryID) {
-                state.filteredInventoryData = state.data;
+                state.filteredData = state.data;
                 return;
             }
 
-            state.filteredInventoryData = state.data.filter(product => {
-                return product.categoryID === categoryID;
+            // Filter products by categoryID (productID is now populated with product details)
+            state.filteredData = state.data.filter(product => {
+                // Access categoryID from the populated productID object
+                const productCategoryID = product.productID?.categoryID;
+                return productCategoryID === categoryID;
             });
         }
     },
@@ -102,7 +108,7 @@ const inventorySlice = createSlice({
             state.isLoading = false;
             state.isError = false;
             //console.log(`action.payload.data = ${JSON.stringify(action.payload.data)}`)
-            state.inventoryData = action.payload.data;
+            state.data = action.payload.data; // Changed from inventoryData to data for consistency
         })
         .addCase(getInventory.rejected, (state, action) => {
             state.isLoading = false;
@@ -120,7 +126,7 @@ const inventorySlice = createSlice({
         .addCase(updateProductInventory.fulfilled, (state, action) => {
             state.isLoading = true;
             state.isError = false;
-            state.inventoryData = action.payload.data;
+            state.data = action.payload.data; // Changed from inventoryData to data for consistency
 
         })
 

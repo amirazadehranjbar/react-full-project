@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {RingLoader} from "react-spinners";
-import {useEffect} from "react";
-import {filterProductByID, getInventory} from "../../../redux/features/inventory/inventorySlice.js";
+import {useEffect, useState, useMemo} from "react"; // Added useMemo for filtering logic
+import {getInventory} from "../../../redux/features/inventory/inventorySlice.js"; // Removed filterProductByID import
 import {getCategory} from "../../../redux/features/category/categoryReducer.js";
 import FlowBitProgress from "../../../components/progressbar/FlowBitProgress.jsx";
 import ComboBoxWithImage from "../../../components/comboBox/ComboBoxWithImage.jsx";
@@ -9,22 +9,29 @@ import ComboBoxWithImage from "../../../components/comboBox/ComboBoxWithImage.js
 function Inventory() {
 
 
-    const {data, filteredData, isLoading, isError, error} = useSelector(state => state.inventoryReducer);
+    const {data, isLoading, isError, error} = useSelector(state => state.inventoryReducer); // Removed filteredData from Redux
     const {categories, isLoadingCategory} = useSelector(state => state.categoryReducer);
     const dispatch = useDispatch();
+    
+    // Track selected category ID for filtering (null = show all)
+    const [selectedCategoryID, setSelectedCategoryID] = useState(null);
 
     useEffect(() => {
         dispatch(getInventory());
         dispatch(getCategory());
     }, [dispatch]);
 
-
-    useEffect(() => {
-        // Check if data and filteredData exist before accessing their length properties to prevent undefined errors
-        if (data && data.length > 0 && (!filteredData || filteredData.length === 0)) {
-            dispatch(filterProductByID(null));
+    // Use useMemo to compute filtered data based on selected category
+    // This only recalculates when data or selectedCategoryID changes
+    const displayData = useMemo(() => {
+        // If no category selected, show all data
+        if (!selectedCategoryID || !data) {
+            return data || [];
         }
-    }, [data, dispatch, filteredData]);
+
+        // Filter products by selected category
+        return data.filter(product => product.productID?.categoryID === selectedCategoryID);
+    }, [data, selectedCategoryID]);
 
 
     const getCategoryName = (categoryId) => {
@@ -34,11 +41,10 @@ function Inventory() {
 
 
     const handleCategoryChange = (categoryID) => {
-        dispatch(filterProductByID(categoryID));
+        // Simply update the selected category ID, useMemo will handle the filtering
+        setSelectedCategoryID(categoryID);
     };
 
-    // Check if filteredData exists before accessing its length to prevent undefined errors
-    const displayData = filteredData && filteredData.length > 0 ? filteredData : data;
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 h-full w-full bg-gray-500 mt-2 ">

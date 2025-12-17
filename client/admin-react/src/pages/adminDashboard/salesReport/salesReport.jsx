@@ -13,17 +13,18 @@ function SalesReport() {
 
     return (
         <div className="w-full flex flex-col items-center overflow-hidden">
-            <div className="flex flex-col w-full space-y-10">
+            <div className="flex flex-col w-full space-y-6 sm:space-y-10">
                 <CardsList />
 
-                <div className="flex w-full gap-5">
-                    {/* Chart takes 2/3 */}
-                    <div className="flex-2/3">
+                {/* Responsive layout: stack vertically on mobile, side-by-side on desktop */}
+                <div className="flex flex-col lg:flex-row w-full gap-4 lg:gap-5">
+                    {/* Chart takes full width on mobile, 2/3 on desktop */}
+                    <div className="w-full lg:w-2/3">
                         <Chart />
                     </div>
 
-                    {/* Table takes 1/3 and can shrink */}
-                    <div className="w-1/3 min-w-0">
+                    {/* Table takes full width on mobile, 1/3 on desktop */}
+                    <div className="w-full lg:w-1/3 min-w-0">
                         <TableComponent data={data} isError={isError} dataHeaders={dataHeaders} isLoading={isLoading} />
                     </div>
                 </div>

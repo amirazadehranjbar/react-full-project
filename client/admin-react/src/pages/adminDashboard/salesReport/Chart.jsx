@@ -11,7 +11,7 @@ function Chart() {
     // You can define all series settings here
     const series = [
         {
-            categories: pData,
+            data: pData, // Changed from 'categories' to 'data' - MUI X Charts requires 'data' property
             label: 'pv',
             yAxisId: 'leftAxisId',
             // Suggested styles (exact names may vary by version)
@@ -27,7 +27,7 @@ function Chart() {
             areaOpacity: 0.08
         },
         {
-            categories: uData,
+            data: uData, // Changed from 'categories' to 'data' - MUI X Charts requires 'data' property
             label: 'uv',
             yAxisId: 'rightAxisId',
             color: '#10b981',
@@ -39,12 +39,14 @@ function Chart() {
     ];
 
     return (
-        <div className="p-2 flex-10/12">
+        // Responsive padding and layout
+        <div className="p-2 w-full">
             <Box sx={{
                 width: '100%',
-                height: 320,
+                // Responsive height: smaller on mobile, larger on desktop
+                height: { xs: 250, sm: 300, md: 320 },
                 bgcolor: 'rgba(255,255,255,0.53)',
-                p: 2,
+                p: { xs: 1, sm: 2 }, // Less padding on mobile
                 borderRadius: 5,
                 border: 2,
                 borderColor: "#262626",
@@ -55,7 +57,7 @@ function Chart() {
                     xAxis={[
                         {
                             scaleType: 'point',
-                            categories: xLabels,
+                            data: xLabels, // Changed from 'categories' to 'data' - MUI X Charts requires 'data' property
                             // Label for x axis
                             label: 'Pages',
                             tickLabelStyle: {fill: "#fff", fontSize: 14, fontFamily: "roboto"},

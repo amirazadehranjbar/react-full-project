@@ -60,14 +60,13 @@ export const updateProductInventory = createAsyncThunk(
 )
 //endregion
 
-// Initial state with corrected property names to match component expectations
+// Initial state - removed filteredData as filtering is now handled in component with useMemo
 const initialState = {
     isLoading: false,
     isError: false,
     success: false,
     message: "",
-    data: [], // Changed from inventoryData to data for consistency with component
-    filteredData: [], // Changed from filteredInventoryData to filteredData for consistency with component
+    data: [], // Only store raw inventory data from API
 };
 
 const inventorySlice = createSlice({
@@ -75,27 +74,6 @@ const inventorySlice = createSlice({
     name: "inventory",
 
     initialState,
-
-    reducers: {
-        filterProductByID: (state, action) => {
-
-            const categoryID = action.payload;
-
-            // If no categoryID provided, show all data
-            if (!categoryID) {
-                state.filteredData = state.data;
-                return;
-            }
-
-            // Filter products by categoryID (productID is now populated with product details)
-            state.filteredData = state.data.filter(product => {
-                // Access categoryID from the populated productID object
-                const productCategoryID = product.productID?.categoryID;
-                return productCategoryID === categoryID;
-            });
-        }
-    },
-
 
     extraReducers: (builder) => builder
 
@@ -138,5 +116,5 @@ const inventorySlice = createSlice({
     //endregion
 });
 
-export const {filterProductByID} = inventorySlice.actions;
+// Removed filterProductByID export - filtering is now handled in component with useMemo
 export default inventorySlice.reducer;

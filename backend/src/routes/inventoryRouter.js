@@ -10,7 +10,7 @@ inventoryRouter.get(
     authenticate,
     //authorizeRole,
     async (req, res) => {
-        
+
         try {
             // Populate productID to get full product details including name and categoryID
             const data = await InventoryModel.find({})

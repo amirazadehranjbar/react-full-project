@@ -185,6 +185,33 @@ productRouter.post("/api/user/products-in-category", async (req, res) => {
 })
 //endregion
 
+//region✅ Public route - Get single product by ID
+productRouter.get("/api/user/product/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const product = await ProductModel.findById(id);
+        
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+        
+        return res.status(200).json({
+            success: true,
+            data: product
+        });
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: e.message || "Something went wrong"
+        });
+    }
+});
+//endregion
+
 //region✅ product details
 productRouter.post("/api/user/products/details", async (req, res) => {
 

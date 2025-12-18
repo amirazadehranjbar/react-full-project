@@ -3,8 +3,6 @@ const express = require("express");
 const { ProductModel } = require("../models/productModel");
 const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
 const CategoryModel = require("../models/categoryModel");
-// const { upload, cloudinary } = require("../config/cloudinary");
-const inventoryModel = require("../models/inventoryModel");
 const productRouter = express.Router();
 
 //region ✅ Admin only - Add product with images
@@ -12,23 +10,9 @@ productRouter.post(
     "/api/admin/product",
     authenticate,
     authorizeRole('admin'),
-    // upload.array('images', 1), // Accept up to 5 images
     async (req, res) => {
         try {
             const { name, price, images ,inventory, targetInventory, categoryID, isOnSale } = req.body;
-
-            // // Get uploaded image URLs from Cloudinary
-            // const imageUrls = req.files ? req.files.map(file => file.path) : [];
-
-            // console.log(imageUrls.length);
-            //
-            // if (imageUrls.length === 0) {
-            //     return res.status(400).json({
-            //         success: false,
-            //         message: "At least one image is required"
-            //     });
-            // }
-
 
             const newProduct = new ProductModel({
                 name,
@@ -61,16 +45,16 @@ productRouter.post(
 
 //region ✅ Admin only - Update product with new images
 productRouter.put(
-    "/api/admin/product/:id",
+    "/api/admin/product/update",
     authenticate,
     authorizeRole('admin'),
-    // upload.array('images', 5),
     async (req, res) => {
-        try {
-            const { id } = req.params;
-            const { name, price, inventory, targetInventory, categoryID, isOnSale, keepOldImages } = req.body;
 
-            const product = await ProductModel.findById(id);
+        try {
+
+            const { name, price, isOnSale ,productID , imageUrls} = req.body;
+
+            const product = await ProductModel.findById(productID);
             if (!product) {
                 return res.status(404).json({
                     success: false,
@@ -78,33 +62,14 @@ productRouter.put(
                 });
             }
 
-            // Handle images
-            let imageUrls = [];
-            if (keepOldImages === 'true') {
-                imageUrls = product.images;
-            } else {
-                // Delete old images from Cloudinary
-                for (const imageUrl of product.images) {
-                    const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
-                    await cloudinary.uploader.destroy(publicId);
-                }
-            }
 
-            // Add new images
-            if (req.files && req.files.length > 0) {
-                const newImageUrls = req.files.map(file => file.path);
-                imageUrls = [...imageUrls, ...newImageUrls];
-            }
 
             // Update product
             const updatedProduct = await ProductModel.findByIdAndUpdate(
-                id,
+                productID,
                 {
                     name: name || product.name,
                     price: price ? Number(price) : product.price,
-                    inventory: inventory ? Number(inventory) : product.inventory,
-                    targetInventory: targetInventory ? Number(targetInventory) : product.targetInventory,
-                    categoryID: categoryID || product.categoryID,
                     images: imageUrls,
                     isOnSale: isOnSale !== undefined ? isOnSale === 'true' : product.isOnSale
                 },

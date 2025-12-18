@@ -58,7 +58,7 @@ This is a learning project, so feedback is welcome! Feel free to open an issue o
 
 ## 📧 Contact
 - **GitHub**: [amirazadehranjbar](https://github.com/amirazadehranjbar)
-- **Email**: amirazadehranjbar@example.com (replace with your email)
+- **Email**: amirazadehranjbar@gmail.com 
 
 ---
 

@@ -1,10 +1,11 @@
 import React from 'react'
 import Image from 'next/image'
 import logo from '../../public/images/logo.png'
-import ButtonMedium from "@/components/my-ui/ButtonMedium";
 import {HomeIcon, PackageSearchIcon} from "lucide-react";
-import {Button} from "@/components/ui/button";
 import {ToggleTheme} from "@/components/my-ui/ToggleTheme";
+import AuthButtons from "@/components/my-ui/AuthButtons";
+import ButtonMedium from "@/components/my-ui/ButtonMedium";
+
 
 function HeaderGeneral() {
     return (
@@ -18,7 +19,8 @@ function HeaderGeneral() {
 
                 {/*navigations*/}
                 <div className="w-full h-full flex items-center justify-center gap-x-4 border-r-2 ">
-                    <ButtonMedium icon={<HomeIcon/>} text={"home"}/>
+
+                    <ButtonMedium icon={<HomeIcon/>} text={"main"}/>
                     <ButtonMedium icon={<PackageSearchIcon/>} text={"products"}/>
                     <ButtonMedium icon={<PackageSearchIcon/>} text={"products"}/>
                     <ButtonMedium icon={<PackageSearchIcon/>} text={"products"}/>
@@ -28,8 +30,8 @@ function HeaderGeneral() {
             </div>
 
             <div className="flex items-center justify-center gap-x-5 ml-4 mr-4">
-                <Button className="font-bold font-mono cursor-pointer">login</Button>
-                <Button variant="outline" className="font-bold font-mono border-2 border-gray-400 cursor-pointer">sign in</Button>
+
+                <AuthButtons/>
                 <ToggleTheme/>
 
             </div>

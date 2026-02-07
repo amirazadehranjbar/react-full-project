@@ -1,0 +1,17 @@
+{
+  "source": {
+    "include": ["app", "components", "lib", "hooks", "redux"],
+    "includePattern": "\\.(jsx?|js?)$",
+    "excludePattern": "(node_modules/|.next/|out/|docs/)"
+  },
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "encoding": "utf8",
+    "destination": "./docs-jsdoc/",
+    "recurse": true
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true
+  }
+}

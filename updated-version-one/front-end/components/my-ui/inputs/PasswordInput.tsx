@@ -21,7 +21,7 @@ function PasswordInput({
         const percentage = Math.max(0, 100 - ((inputPassLength / minPasswordLength) * 100));
         const label = percentage > 50 ? "weak" : "strong";
 
-        return { percentage, label }
+        return { percentage, label}
     }
 
     const strength = calculateStrong(password);

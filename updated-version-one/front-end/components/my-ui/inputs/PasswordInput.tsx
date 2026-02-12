@@ -1,37 +1,30 @@
 "use client"
-
-import React from 'react'
 import {Label} from "@/components/ui/label";
 import Link from "next/link";
 import {Input} from "@/components/ui/input";
-import {useForm} from "react-hook-form";
 import {Progress} from "@radix-ui/react-progress";
 
-
-function PasswordInput({label}: { label: string }) {
-
-
-    const {watch, register} = useForm();
-
-    const password = watch("password");
-
-
+// Accept register and password from parent
+function PasswordInput({
+                           label,
+                           register,
+                           password
+                       }: {
+    label: string;
+    register: any;
+    password: string;
+}) {
     const calculateStrong = (pas: string): { percentage: number, label: string } => {
+        const minPasswordLength = 8;
+        const inputPassLength = pas ? pas.length : 0;
 
+        const percentage = Math.max(0, 100 - ((inputPassLength / minPasswordLength) * 100));
+        const label = percentage > 50 ? "weak" : "strong";
 
-        const minPasswordLenthg = 6;
-        const inputPassLength = pas ? pas.length : 0 ;
-
-        const percentage: number = 100 - ( (inputPassLength / minPasswordLenthg) * 100);
-
-        const label: string = percentage > 50 ? "weak" : "strong"
-
-        return {
-            percentage: percentage,
-            label: label
-        }
-
+        return { percentage, label }
     }
+
+    const strength = calculateStrong(password);
 
     return (
         <div className="grid gap-2">
@@ -44,27 +37,31 @@ function PasswordInput({label}: { label: string }) {
                     Forgot your password?
                 </Link>
             </div>
-            <Input id="password" required
-                   {...register("password")}
+
+            <Input
+                id="password"
+                type="password"
+                required
+                {...register("password")}
             />
 
-
-            <label>{calculateStrong(password).label}</label>
-            <Progress
-                className="relative h-6.25 w-full overflow-hidden rounded-full bg-gray-800"
-                style={{
-                    transform: "translateZ(0)",
-                }}
-
-            >
-                <Progress
-                    className="ease-[cubic-bezier(0.65, 0, 0.35, 1)] size-full bg-white transition-transform duration-660"
-                    style={{transform: `translateX(-${calculateStrong(password).percentage}%)`}}
-                />
-            </Progress>
-
+            {password && (
+                <>
+                    <label className={strength.label === "weak" ? "text-red-500" : "text-green-500"}>
+                        {strength.label}
+                    </label>
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                        <div
+                            className={`h-full transition-all duration-500 ${
+                                strength.label === "weak" ? "bg-red-500" : "bg-green-500"
+                            }`}
+                            style={{width: `${100 - strength.percentage}%`}}
+                        />
+                    </div>
+                </>
+            )}
         </div>
     )
 }
 
-export default PasswordInput
+export default PasswordInput;

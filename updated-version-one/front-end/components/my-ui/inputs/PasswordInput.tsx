@@ -20,7 +20,9 @@ function PasswordInput({label}: { label: string }) {
 
 
         const minPasswordLenthg = 6;
-        const percentage: number = 100 - ( (pas.length / minPasswordLenthg) * 100);
+        const inputPassLength = pas ? pas.length : 0 ;
+
+        const percentage: number = 100 - ( (inputPassLength / minPasswordLenthg) * 100);
 
         const label: string = percentage > 50 ? "weak" : "strong"
 

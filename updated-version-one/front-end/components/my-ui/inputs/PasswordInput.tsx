@@ -2,17 +2,20 @@
 import {Label} from "@/components/ui/label";
 import Link from "next/link";
 import {Input} from "@/components/ui/input";
-import {Progress} from "@radix-ui/react-progress";
 
-// Accept register and password from parent
+// Accept register, password, error, and hasError from parent
 function PasswordInput({
-                           label,
-                           register,
-                           password
-                       }: {
+    label,
+    register,
+    password,
+    error,
+    hasError
+}: {
     label: string;
     register: any;
     password: string;
+    error?: string;
+    hasError?: boolean;
 }) {
     const calculateStrong = (pas: string): { percentage: number, label: string } => {
         const minPasswordLength = 8;
@@ -21,7 +24,7 @@ function PasswordInput({
         const percentage = Math.max(0, 100 - ((inputPassLength / minPasswordLength) * 100));
         const label = percentage > 50 ? "weak" : "strong";
 
-        return { percentage, label}
+        return {percentage, label}
     }
 
     const strength = calculateStrong(password);
@@ -41,16 +44,25 @@ function PasswordInput({
             <Input
                 id="password"
                 type="password"
-                required
+                aria-invalid={hasError ? "true" : "false"}
+                aria-describedby={error ? "password-error" : undefined}
                 {...register("password")}
             />
 
-            {password && (
+            {/* Show validation error */}
+            {error && (
+                <span id="password-error" className="text-sm text-red-500">
+                    {error}
+                </span>
+            )}
+
+            {/* Show password strength */}
+            {password && !error && (
                 <>
                     <label className={strength.label === "weak" ? "text-red-500" : "text-green-500"}>
-                        {strength.label}
+                        Password strength: {strength.label}
                     </label>
-                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
                         <div
                             className={`h-full transition-all duration-500 ${
                                 strength.label === "weak" ? "bg-red-500" : "bg-green-500"
